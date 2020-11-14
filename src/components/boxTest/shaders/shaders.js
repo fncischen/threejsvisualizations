@@ -219,8 +219,8 @@ const shaderMat = new PhongAnimationMaterial({
 },
 // THREE.MeshPhongMaterial uniforms
 {
-  specular: 0xff0000,
-  shininess: 20
+  specular: 0xfff000,
+  shininess: 50
 }
 );
 

@@ -31,7 +31,7 @@ export default function Particles(props){
 
     var mTime = 0.0; 
     var mTimeStep = (1/60);
-    var mDuration = 500; // change 
+    var mDuration = 100; // change 
 
     // var aColor;
     var testMat;
@@ -176,9 +176,11 @@ export default function Particles(props){
         var h,s,l;
 
         for(var i = 0, offset = 0; i < particleCount; i++) {
-            h = i / particleCount;
-            s = THREE.MathUtils.randFloatSpread(0.2, 0.6);
-            l = THREE.MathUtils.randFloatSpread(0.2, 0.6);
+            h = i/particleCount * 50;
+            // s = THREE.MathUtils.randFloatSpread(0.59, 0.61);
+            l = THREE.MathUtils.randFloatSpread(0.7, 0.9);
+             s = 0.8;
+            // l = 0.5;
 
             color.setHSL(h,s,l);
             // console.log("loop")
@@ -198,7 +200,7 @@ export default function Particles(props){
 
     const generatePositionAndIndexBuffers = (() => {
 
-        var segmentWidth = 4;
+        var segmentWidth = 20;
         prefabGeometry = new THREE.PlaneGeometry(segmentWidth,segmentWidth);
         var squareDimension = Math.floor(Math.sqrt(particleCount));
 
@@ -369,7 +371,7 @@ export default function Particles(props){
         requestAnimationFrame(tick)
     })
 
-    requestAnimationFrame(tick);
+    // requestAnimationFrame(tick);
 
     const update = (() => {
         // mControls.update();
