@@ -143,7 +143,7 @@ export default function Particles(props){
             }
         }
 
-        console.log("test : " + aEndPosition.array)
+        // console.log("test : " + aEndPosition.array)
         // // set up axis angle that can be used for 
         // // axis angle instance 
         var axis = new THREE.Vector3();
@@ -251,8 +251,8 @@ export default function Particles(props){
         prefabBufferGeometry.setAttribute("position", new THREE.BufferAttribute(positionBuffer,3))
         prefabBufferGeometry.getAttribute("position").name = "position";
 
-        console.log(positionBuffer);
-        console.log(indexBuffer)
+        // console.log(positionBuffer);
+        // console.log(indexBuffer)
 
 
 
@@ -312,7 +312,7 @@ export default function Particles(props){
     const update = (() => {
         // mControls.update();
        mParticleSystem.current.material.uniforms['uTime'].value = mTime;
-       mParticleSystem.current.frustumCalled = false; 
+      //  mParticleSystem.current.frustumCalled = false; 
         // console.log(mParticleSystem.current.material);
        // mParticleSystem.current.instanceMatrix.needsUpdate = true; 
        // requestAnimationFrame(tick);
