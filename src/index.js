@@ -54,7 +54,7 @@ function App() {
             <CameraControls/>
             <scene name="Scene">
             <ambientLight />
-            <pointLight position={[0, 400, 0]} intensity={4} distance={1000} decay={2} color="blue"/>
+            <pointLight position={[0, 400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
             <Particles/>
             {/* <BoxTest/> */}
             {/* <BoxTwo/> */}

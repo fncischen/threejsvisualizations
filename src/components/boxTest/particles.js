@@ -33,7 +33,7 @@ export default function Particles(props){
     var mTimeStep = (1/60);
     var mDuration = 500; // change 
 
-    var aColor;
+    // var aColor;
     var testMat;
 
    //  const addControlPoint= ((posX, posY, posZ))
@@ -62,7 +62,7 @@ export default function Particles(props){
         prefabBufferGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(particleCount*3) ,3));
         aColor = prefabBufferGeometry.getAttribute('color');
 
-        // console.log(aColor + " buffer geometry");
+        console.log(aColor + " buffer geometry");
 
         var delay;
         // console.log(prefabGeometry.vertices.length + " verticies length")
@@ -156,6 +156,7 @@ export default function Particles(props){
            axis.normalize(); 
 
         //    // place axis angle value via buffer here 
+            angle = Math.PI * THREE.Math.randInt(16, 32);
 
         //    // vary per particle // keep it constant 
            for(j = 0; j< prefabGeometry.vertices.length; j++) {
@@ -165,7 +166,8 @@ export default function Particles(props){
                 aAxisAngle.array[offset++] = angle;
            }
         } 
- 
+        
+         // console.log("aAxis :" + aAxisAngle.array );
 
         // }
 
@@ -173,29 +175,30 @@ export default function Particles(props){
         var color = new THREE.Color();
         var h,s,l;
 
-        for(var i = 0, offset = 0; i < prefabGeometry.vertices.length; i++) {
+        for(var i = 0, offset = 0; i < particleCount; i++) {
             h = i / particleCount;
-            s = THREE.MathUtils.randFloatSpread(0.4, 0.6);
-            l = THREE.MathUtils.randFloatSpread(0.4, 0.6);
+            s = THREE.MathUtils.randFloatSpread(0.2, 0.6);
+            l = THREE.MathUtils.randFloatSpread(0.2, 0.6);
 
             color.setHSL(h,s,l);
-
+            // console.log("loop")
             for(var j = 0; j < prefabGeometry.vertices.length; j++) {
                 aColor.array[offset++] = color.r;
                 aColor.array[offset++] = color.g;
                 aColor.array[offset++] = color.b; 
+                // console.log('loop');
             }
 
         } 
+        //console.log("a color " + aColor.array);
 
         // mParticleSystem.current.frustumCulled = false;
         // console.log(prefabBufferGeometry);
     })
 
-
     const generatePositionAndIndexBuffers = (() => {
 
-        var segmentWidth = 5;
+        var segmentWidth = 4;
         prefabGeometry = new THREE.PlaneGeometry(segmentWidth,segmentWidth);
         var squareDimension = Math.floor(Math.sqrt(particleCount));
 
@@ -254,7 +257,61 @@ export default function Particles(props){
         // console.log(positionBuffer);
         // console.log(indexBuffer)
 
+        prefabBufferGeometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(positionBuffer.length),3));
+        var normals = prefabBufferGeometry.getAttribute('normal');
 
+        var vA, vB, vC;
+
+        var p1 = new THREE.Vector3();
+        var p2 = new THREE.Vector3();
+        var p3 = new THREE.Vector3(); 
+
+        var cA = new THREE.Vector3();
+        var cB = new THREE.Vector3();
+        
+        var indices = indexBuffer.array; 
+
+        // console.log(indexBuffer + " index buffer")
+        // 6 
+        for(var i = 0; i < prefabIndicesCount; i += 3) {
+
+            // https://en.wikipedia.org/wiki/Vertex_normal
+            vA = indexBuffer[i] * 3;
+            vB = indexBuffer[i + 1] * 3;
+            vC = indexBuffer[i + 2] * 3
+            // offset amount
+
+            // https://threejs.org/docs/#api/en/math/Vector3.fromArray
+            p1.fromArray(positionBuffer, vA); // retrieve the vector, via this offset value from the array 
+            p2.fromArray(positionBuffer, vB);
+            p3.fromArray(positionBuffer, vC); 
+
+            cB.subVectors(p3, p2);
+            cA.subVectors(p1, p2);
+            cB.cross(cA) // we get the value of cb as cross product 
+
+            normals.array[vA] += cB.x;
+            normals.array[vA + 1] += cB.y;
+            normals.array[vA + 2] += cB.z;
+
+            normals.array[vB] += cB.x;
+            normals.array[vB + 1] += cB.y;
+            normals.array[vB + 2] += cB.z;
+
+            normals.array[vC] += cB.x;
+            normals.array[vC + 1] += cB.y;
+            normals.array[vC + 2] += cB.z;
+
+
+        }
+
+        for(var i = 0; i < particleCount; i++) {
+            for(var j =0; j < prefabVerticiesCount; j++) {
+                normals[i*prefabIndicesCount + k ] = normals[k];
+            }
+        }
+
+        normals.needUpdate = true; 
 
     })
 
@@ -265,7 +322,10 @@ export default function Particles(props){
     })
 
     const generateVertexNormals = (() => {
-       // var vertexNormals = prefabBufferGeometry.getAttribute('normal');
+       var posLength = prefabBufferGeometry.getAttribute('position').array.length; 
+
+
+
 
 
     })
@@ -280,6 +340,8 @@ export default function Particles(props){
             // testMat = new THREE.MeshPhongMaterial([{color: "blue"}]);
             testMat = new THREE.MeshBasicMaterial( { color: 0xfff000 } );
             generatePositionAndIndexBuffers(); // why i messed up 
+            generateVertexNormals();
+            generateUVbuffers();
             fillBufferData();
 
      })
