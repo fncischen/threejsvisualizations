@@ -1,12 +1,7 @@
 import * as THREE from 'three';
-import React, { Suspense, useState, useRef,useEffect } from 'react'
-import { Canvas, extend, useFrame, useThree} from 'react-three-fiber'
-import { unstable_batchedUpdates } from 'react-dom';
-import { instancedMesh, MeshPhongMaterial, RawShaderMaterial } from 'three';
-// import { useSpring, config } from '@react-spring/core'
-// import { match } from 'core-js/fn/symbol';
+import React, {useRef,useEffect } from 'react'
 
-import shadMat from "./shaders/shaders.js"
+import ParticleMaterial from "../shaders/ParticleMaterial.js"
 
 export default function Particles(props){
 
@@ -32,11 +27,6 @@ export default function Particles(props){
     var mTime = 0.0; 
     var mTimeStep = (1/60);
     var mDuration = 100; // change 
-
-    // var aColor;
-    var testMat;
-
-   //  const addControlPoint= ((posX, posY, posZ))
 
     const fillBufferData = (() => {
         // then insert shader 
@@ -317,33 +307,11 @@ export default function Particles(props){
 
     })
 
-    const generateUVbuffers = (() => {
-        // var uvBuffer = prefabBufferGeometry.getAttribute("uv");
-        
-
-    })
-
-    const generateVertexNormals = (() => {
-       var posLength = prefabBufferGeometry.getAttribute('position').array.length; 
-
-
-
-
-
-    })
-
-
-
 
     const initializeParticles = (() => {
             mParticleSystem = useRef();
-            // prefabGeometry = new THREE.PlaneGeometry(4,4)
             prefabBufferGeometry = new THREE.BufferGeometry(); 
-            // testMat = new THREE.MeshPhongMaterial([{color: "blue"}]);
-            testMat = new THREE.MeshBasicMaterial( { color: 0xfff000 } );
             generatePositionAndIndexBuffers(); // why i messed up 
-            generateVertexNormals();
-            generateUVbuffers();
             fillBufferData();
 
      })
@@ -351,15 +319,9 @@ export default function Particles(props){
         
     initializeParticles();
 
-    // requestAnimationFrame(tick);
-
-   // console.log(shadMat.vertexShader);
-
     useEffect(() => {
         tick();
     })
-
-
 
     const tick = (() => {
         update();
@@ -371,28 +333,16 @@ export default function Particles(props){
         requestAnimationFrame(tick)
     })
 
-    // requestAnimationFrame(tick);
 
     const update = (() => {
         // mControls.update();
        mParticleSystem.current.material.uniforms['uTime'].value = mTime;
-      //  mParticleSystem.current.frustumCalled = false; 
-        // console.log(mParticleSystem.current.material);
-       // mParticleSystem.current.instanceMatrix.needsUpdate = true; 
-       // requestAnimationFrame(tick);
+
 
     })
 
-    // useFrame(() => {
-    //     mParticleSystem.current.rotation.x += 0.003;
-    //     mParticleSystem.current.rotation.y += 0.003;
-    //     mParticleSystem.current.rotation.z += 0.003; 
-    // })
-
-    // how to debug Instanced Mesh 
-
     return(
-        <mesh ref={mParticleSystem} args={[prefabBufferGeometry, shadMat]}>
+        <mesh ref={mParticleSystem} args={[prefabBufferGeometry, ParticleMaterial]}>
         </mesh>
     )
 }

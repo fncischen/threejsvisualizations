@@ -1,11 +1,7 @@
 import ReactDOM from 'react-dom'
 import React, { useCallback, useEffect, useRef, useMemo } from 'react'
-import Particles from "./components/boxTest/particles.js"
+import Particles from "./components/particles/particles.js"
 import { Canvas, useFrame, useThree, extend} from 'react-three-fiber'
-import * as THREE from 'three';
-import BoxTest from "./components/boxtest.js"
-import BoxTwo from "./components/boxtwo.js"
-import BoxThree from "./components/boxthree.js"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 extend({ OrbitControls });
@@ -40,14 +36,6 @@ const CameraControls = (() => {
 
 function App() {
     const mouse = useRef([0, 0])
-    const onMouseMove = useCallback(({ clientX: x, clientY: y }) => (mouse.current = [x - window.innerWidth / 2, y - window.innerHeight / 2]), [])
-    
-    // const cam = new THREE.PerspectiveCamera({fov: 60, position: [0, 600, 600], near: 0.1, far: 5000}); 
-    // var camera = useRef();
-    // useFrame(({camera})=>{
-    //   camera.current.rotation.x += 0.003; 
-    // })
-    // const onMouseMove = useCallback(({ clientX: x, clientY: y }) => (mouse.current = [x - window.innerWidth / 2, y - window.innerHeight / 2]), []) 
 
     return (
         <Canvas style={{height: 500, color: "FF0000"}}>
