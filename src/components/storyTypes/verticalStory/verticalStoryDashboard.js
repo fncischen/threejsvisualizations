@@ -36,7 +36,19 @@ export default class VerticalStoryDashboard {
         let groundPlaneWidth = groundPlane.width; 
         let groundPlaneCoords = groundPlane.transformCoords; 
 
+        for(var i = 0; i < story.characters.length; i++){
+            let character = story.characters[i];
 
+            // convert from story space to world space;
+
+        }
+
+        for(var j = 0; j < story.environments.length; j++) {
+            let environment = story.environment[j];
+
+            // convert from story space to world space;
+
+        }
     }
 
     initalizeStory() {

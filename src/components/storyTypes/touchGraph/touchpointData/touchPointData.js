@@ -8,6 +8,9 @@ export default class touchPointData {
         // this could be 
         // we assign weights to these data elements via graphical, front-end data points
         // and information design 
+
+        // data could be:
+        // migrant 
     }
 
 }
