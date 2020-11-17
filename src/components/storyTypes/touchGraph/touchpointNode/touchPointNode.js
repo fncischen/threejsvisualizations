@@ -1,3 +1,6 @@
+
+// each touchpoint node is like a story 
+
 export default class touchPointNode {
 
     constructor(props){
