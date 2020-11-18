@@ -46,6 +46,11 @@ export default function LoaderTest(){
         //  const { usedLoader } = useLoader(GLTFLoader, "/models/models2.gltf");
          const {nodes, animations} = useLoader(GLTFLoader, "/models/models2.gltf");
 
+         // https://stackoverflow.com/questions/50674478/javascript-array-looks-like-its-empty-but-has-a-value
+         setTimeout(function(){
+            console.log(objectsInScene)
+         }, 1000)
+
          console.log(nodes);
         //  console.log(usedLoader);
 
