@@ -1,3 +1,5 @@
+// https://threejs.org/docs/#api/en/loaders/ObjectLoader
+
 export default class verticalStory {
     constructor(props){
         this.characters = props.characters;

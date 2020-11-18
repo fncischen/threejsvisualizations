@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useMemo } from 'react'
 import Particles from "./components/particles/particles.js"
 import { Canvas, useFrame, useThree, extend} from 'react-three-fiber'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import LoaderTest from "./components/storyTypes/verticalStory/loaderTest.js"
 
 extend({ OrbitControls });
 
@@ -39,7 +40,8 @@ function App() {
 
     return (
         <Canvas style={{height: 500, color: "FF0000"}}>
-            <CameraControls/>
+            <CameraControls/>            
+            <LoaderTest/>
             <scene name="Scene">
             <ambientLight />
             <pointLight position={[0, 400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
