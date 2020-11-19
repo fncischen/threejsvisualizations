@@ -77,6 +77,9 @@ const CameraControls = ((props) => {
 
   /// https://codeworkshop.dev/blog/2020-04-03-adding-orbit-controls-to-react-three-fiber/
   // https://github.com/mrdoob/three.js/blob/master/examples/webgl_camera.html
+
+  // figure out the react render viewport issues
+  // https://shaderism.com/multiple-render-views-with-react
   const animate = (() => {
     gl.clear();
 
