@@ -15,7 +15,7 @@ export default function RainParticles(props) {
 
     var particleCount; 
     var mTime = 0;
-    var mDuration = 10; 
+    var mDuration = 5; 
     var mTimeStep = (1/60);
     var S = 80; // particleDimension 
     var progress = 0;
@@ -70,22 +70,6 @@ export default function RainParticles(props) {
     // https://codepen.io/cvaneenige/pen/zegVmG
     const setupShaderProperties = (() => {
 
-        // var particleCount = 4*S*S;  // this isn't right
-        var particleCount = 4 *S; // because there are 2S x pts, 2S z pts;  
-        var prefabVerticiesLength = prefabGeometry.vertices.length; 
-
-        // prefabBufferGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(particleCount * prefabVerticiesLength),3)); // keep for consistency
-        prefabBufferGeometry.setAttribute('aPositionStart', new THREE.BufferAttribute(new Float32Array(particleCount *3 * prefabVerticiesLength),3));
-        prefabBufferGeometry.setAttribute('aPositionEnd', new THREE.BufferAttribute(new Float32Array(particleCount *3 * prefabVerticiesLength),3));
-        prefabBufferGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(particleCount*3 * prefabVerticiesLength),3));
-        prefabBufferGeometry.setAttribute("aOffset", new THREE.BufferAttribute(new Float32Array(particleCount * prefabVerticiesLength),1));
-
-        // var posBuffer = prefabBufferGeometry.getAttribute('position');
-        var aStartPosBuffer = prefabBufferGeometry.getAttribute('aPositionStart');
-        var aEndPosBuffer = prefabBufferGeometry.getAttribute('aPositionEnd');
-        var aOffset = prefabBufferGeometry.getAttribute('aOffset');
-        var color = prefabBufferGeometry.getAttribute('color');
-
         var xzcoords = []
 
         for (let x = -S; x < S; x += 1) {
@@ -97,13 +81,32 @@ export default function RainParticles(props) {
             }
           }
 
-          multiplier = xzcoords.length / 2; 
+          multiplier = xzcoords.length / 2;
+
+        // var particleCount = 4*S*S;  // this isn't right
+        // var particleCount = 4 *S; // because there are 2S x pts, 2S z pts;  
+        var prefabVerticiesLength = prefabGeometry.vertices.length; 
+
+        // prefabBufferGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(particleCount * prefabVerticiesLength),3)); // keep for consistency
+        prefabBufferGeometry.setAttribute('aPositionStart', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
+        prefabBufferGeometry.setAttribute('aPositionEnd', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
+        // prefabBufferGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(particleCount*3 * prefabVerticiesLength),3));
+        prefabBufferGeometry.setAttribute("aOffset", new THREE.BufferAttribute(new Float32Array(multiplier * prefabVerticiesLength),1));
+
+        // var posBuffer = prefabBufferGeometry.getAttribute('position');
+        var aStartPosBuffer = prefabBufferGeometry.getAttribute('aPositionStart');
+        var aEndPosBuffer = prefabBufferGeometry.getAttribute('aPositionEnd');
+        var aOffset = prefabBufferGeometry.getAttribute('aOffset');
+        // var color = prefabBufferGeometry.getAttribute('color');
+
+
+       
 
           // this is the real count of the xc coords 
           // 
         
         // study this 
-        for(var i = 0, offset = 0; i < particleCount; i++){
+        for(var i = 0, offset = 0; i < multiplier; i++){
 
             //  apply for each verticies 
             for(var j = 0; j < prefabVerticiesLength; j++){
@@ -114,7 +117,7 @@ export default function RainParticles(props) {
         }
 
 
-        for(var i = 0, offset = 0; i < particleCount; i++){
+        for(var i = 0, offset = 0; i < multiplier; i++){
 
             //  apply for each verticies 
             for(var j = 0; j < prefabVerticiesLength; j++){
@@ -124,8 +127,8 @@ export default function RainParticles(props) {
             }
         }
 
-        var total = particleCount;
-        for(var i = 0, offset = 0; i < particleCount; i++){
+        var total = multiplier;
+        for(var i = 0, offset = 0; i < multiplier; i++){
            var delay = Math.random() * (total * ((1 - mDuration) / (multiplier - 1)));
            for(var j = 0; j < prefabVerticiesLength; j++) {
                aOffset.array[offset++] = delay; // offset each time you skip a vertices
@@ -178,6 +181,7 @@ export default function RainParticles(props) {
         // mControls.update();
        // mParticleSystem.current.material.uniforms['uTime'].value = mTime;
        mParticleSystem.current.material.uniforms['uProgress'].value = mTime; 
+       // console.log(mParticleSystem.current.material.uniforms['uDuration'].value);
        // console.log(mParticleSystem.current.material.uniforms['uP'].value)
         // console.log(mTime);
     })
@@ -188,7 +192,15 @@ export default function RainParticles(props) {
     // mParticleSystem.current.material.uniforms['uProgress'] = 
 
     return (
+        <group>
+        <mesh geometry={new THREE.IcosahedronGeometry(1, 2)} material={new THREE.MeshStandardMaterial({
+            flatShading: false,
+            roughness: 0.1,
+            metalness: 0.7
+        })} position={[0,0,0]}/>
+        <mesh geometry={new THREE.BoxGeometry(440, 440, 440)} material={new THREE.MeshPhongMaterial({color: "blue", emissive: "#212121", side: THREE.BackSide })}/>
         <mesh ref={mParticleSystem} args={[prefabBufferGeometry, RainMat]}>
         </mesh>
+        </group>
     )
 }

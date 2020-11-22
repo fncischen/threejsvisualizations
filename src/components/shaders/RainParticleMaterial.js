@@ -50,7 +50,7 @@ const RainMat = new RainParticleMaterial({
 
     uniforms: {
         uPosition: {type: 'v3', value: [0,0,0]},
-        uDuration: {type: 'f', value: 10},
+        uDuration: {type: 'f', value: 5},
         uProgress: {type: 'f', value: 0}
       },
 
@@ -84,12 +84,12 @@ const RainMat = new RainParticleMaterial({
         'basePosition *= scale;',
         'basePosition *= min(1.0, max(0.0, -10.0 + distance(vec3(uPosition.x, uPosition.y, newPosition.z), newPosition)));',
         'vec3 finalPos = newPosition + basePosition;',
-        'gl_Position = vec4(finalPos, 0.0);'
+        'gl_Position =   projectionMatrix * viewMatrix * modelMatrix * vec4(finalPos, 1.0);'
     ]
 
 })
 
-console.log(RainMat.mainVertexFunctions);
+console.log(RainMat.vertexShader);
 
 // const vertexShader =  `
 //     attribute vec3 aPositionStart;

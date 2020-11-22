@@ -23,7 +23,7 @@ const CameraControls = (() => {
   // const Camera = new THREE.PerspectiveCamera({fov: 60, position: [0, 600, 600], near: 0.1, far: 5000});
   camera.position.x = 0;
   camera.position.y = 0;
-  camera.position.z = 80;
+  camera.position.z = 5;
   camera.fov = 40;
   camera.near = 0.1;
   camera.far = 10000;
@@ -47,7 +47,7 @@ function App() {
             <pointLight position={[0, -400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
             <pointLight position={[0, 0, 400]} intensity={4} distance={1000} decay={2} color={"white"}/>
             <pointLight position={[0, 0, -400]} intensity={4} distance={1000} decay={2} color={"white"}/>
-            <spotLight position={[0,30,5]} color={"red"}/>
+            <spotLight position={[0,5,0]} color={"red"} intensity={10} distance={1000}/>
             {/* <Particles/> */}
             {/* <BoxTest/> */}
             {/* <BoxTwo/> */}
