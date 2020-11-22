@@ -20,6 +20,8 @@ export default function RainParticles(props) {
     var S = 80; // particleDimension 
     var progress = 0;
 
+    var pLight; 
+
     var rainParticleMaterial; 
 
     const setupPositionAndIndexBuffer = (() => {
@@ -90,14 +92,14 @@ export default function RainParticles(props) {
         // prefabBufferGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(particleCount * prefabVerticiesLength),3)); // keep for consistency
         prefabBufferGeometry.setAttribute('aPositionStart', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
         prefabBufferGeometry.setAttribute('aPositionEnd', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
-        // prefabBufferGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(particleCount*3 * prefabVerticiesLength),3));
+        // prefabBufferGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
         prefabBufferGeometry.setAttribute("aOffset", new THREE.BufferAttribute(new Float32Array(multiplier * prefabVerticiesLength),1));
 
         // var posBuffer = prefabBufferGeometry.getAttribute('position');
         var aStartPosBuffer = prefabBufferGeometry.getAttribute('aPositionStart');
         var aEndPosBuffer = prefabBufferGeometry.getAttribute('aPositionEnd');
         var aOffset = prefabBufferGeometry.getAttribute('aOffset');
-        // var color = prefabBufferGeometry.getAttribute('color');
+        // var aColor = prefabBufferGeometry.getAttribute('color');
 
 
        
@@ -144,12 +146,35 @@ export default function RainParticles(props) {
         //       value: [0, 0, 0]
         //     }
         //   };
+        var color = new THREE.Color();
+        var h,s,l;
 
+        // for(var i = 0, offset = 0; i < multiplier; i++) {
+        //     // h = i/particleCount * 50;
+        //     // // s = THREE.MathUtils.randFloatSpread(0.59, 0.61);
+        //     // l = THREE.MathUtils.randFloatSpread(0.7, 0.9);
+        //     //  s = 0.8;
+        //     // l = 0.5;
+        //     h = 0.7;
+        //     l = 0.6;
+        //     s = 0.8;
+
+        //     color.setHSL(h,s,l);
+        //     // console.log("loop")
+        //     for(var j = 0; j < prefabGeometry.vertices.length; j++) {
+        //         aColor.array[offset++] = color.r;
+        //         aColor.array[offset++] = color.g;
+        //         aColor.array[offset++] = color.b; 
+        //         // console.log('loop');
+        //     }
+
+        // } 
         
     })
 
     const initializeParticles = (() => {
         mParticleSystem = useRef();
+        pLight = useRef();
         // particleDimension; // check 
         prefabGeometry =  new THREE.OctahedronGeometry(1,0) // dont use buffer geometries
         // since we want verticies 
@@ -184,6 +209,13 @@ export default function RainParticles(props) {
        // console.log(mParticleSystem.current.material.uniforms['uDuration'].value);
        // console.log(mParticleSystem.current.material.uniforms['uP'].value)
         // console.log(mTime);
+       let p = mParticleSystem.current.material.uniforms['uProgress'].value * 2 - 1;
+       p = 1 - p * p; 
+       const newColor = new THREE.Color().setHSL(0.75 + p * 0.25, 0.7, 0.4);
+       // console.log(newColor);
+       let color = [newColor.r, newColor.g, newColor.b]
+    //    p.current.color = newColor;
+       mParticleSystem.current.material.uniforms['color'].value = color; 
     })
 
 
@@ -198,9 +230,15 @@ export default function RainParticles(props) {
             roughness: 0.1,
             metalness: 0.7
         })} position={[0,0,0]}/>
-        <mesh geometry={new THREE.BoxGeometry(440, 440, 440)} material={new THREE.MeshPhongMaterial({color: "blue", emissive: "#212121", side: THREE.BackSide })}/>
-        <mesh ref={mParticleSystem} args={[prefabBufferGeometry, RainMat]}>
+        <mesh geometry={new THREE.BoxGeometry(440, 440, 440)} material={new THREE.MeshPhongMaterial({color: "black", emissive: "#212121", side: THREE.BackSide })}/>
+        <mesh ref={mParticleSystem} args={[prefabBufferGeometry, RainMat]} castShadow={true}>
         </mesh>
+
+        {/* <ambientLight color={"black"} distance={1} position={[10,10,1]}/> */}
+
+        {/* <spotLight position={[0,25,0]} intensity={5} distance={5} decay={Math.PI/2} /> */}
+        <pointLight ref={pLight} color={"red"} position={[0,25,0]} intensity={5} distance={200} decay={Math.PI/2} />
+
         </group>
     )
 }

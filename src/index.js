@@ -42,12 +42,12 @@ function App() {
         <Canvas style={{height: 500, color: "FF0000"}}>
             <CameraControls/>
             <scene name="Scene">
-            <ambientLight />
-            <pointLight position={[0, 400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
+            {/* <pointLight position={[0, 400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
             <pointLight position={[0, -400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
             <pointLight position={[0, 0, 400]} intensity={4} distance={1000} decay={2} color={"white"}/>
-            <pointLight position={[0, 0, -400]} intensity={4} distance={1000} decay={2} color={"white"}/>
-            <spotLight position={[0,5,0]} color={"red"} intensity={10} distance={1000}/>
+            <pointLight position={[0, 0, -400]} intensity={4} distance={1000} decay={2} color={"white"}/> */}
+            {/* <spotLight position={[0,5,0]} color={"red"} intensity={100} distance={1000}/> */}
+            
             {/* <Particles/> */}
             {/* <BoxTest/> */}
             {/* <BoxTwo/> */}

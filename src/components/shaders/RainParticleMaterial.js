@@ -10,14 +10,26 @@ ShaderChunk['rotate_vector'] = "vec3 rotateVector(vec4 q, vec3 v) \n { \n return
 ShaderChunk['ease_in_ease_out_sin'] = "float easeInOutSin(float t) \n{ \n return (1.0 + sin(3.141618 * t - 3.141618/ 2.0)) / 2.0; \n} \n";
 
 class RainParticleMaterial extends BaseAnimationMaterial{
-    constructor(params) {
+    constructor(params, uniformValues) {
         super(params);
 
-        var phongShader = THREE.ShaderLib['shadow'];
+        var shadowShader = THREE.ShaderLib['shadow'];
+        this.lights = false; 
+        this.uniforms = THREE.UniformsUtils.merge([shadowShader.uniforms, this.uniforms])
+        var testShader = `
+                uniform vec3 u_color;
+
+                void main() { 
+
+                gl_FragColor = vec4(1, 0, 0, 1);   // red
+            
+                }
+            `
 
         this.vertexShader = this._concatVertexShader();
-        this.fragmentShader = phongShader.fragmentShader;
+        this.fragmentShader = shadowShader.fragmentShader;
 
+        this.setUniformValues(uniformValues)
     }
 
 }
@@ -47,11 +59,12 @@ RainParticleMaterial.prototype._concatVertexShader = function() {
 // the rain particle material
 
 const RainMat = new RainParticleMaterial({
-
     uniforms: {
         uPosition: {type: 'v3', value: [0,0,0]},
         uDuration: {type: 'f', value: 5},
-        uProgress: {type: 'f', value: 0}
+        uProgress: {type: 'f', value: 0},
+        color: {type: 'v3', value: [0,0.5,0]},
+        opacity: {type: 'f', value: 0.25}
       },
 
     shaderFunctions: [
@@ -75,7 +88,7 @@ const RainMat = new RainParticleMaterial({
         'attribute float aOffset;',
         'uniform vec3 uPosition;',
         'uniform float uDuration;',
-        'uniform float uProgress;'
+        'uniform float uProgress;',
     ],
 
     mainVertexFunctions: [
@@ -87,9 +100,13 @@ const RainMat = new RainParticleMaterial({
         'gl_Position =   projectionMatrix * viewMatrix * modelMatrix * vec4(finalPos, 1.0);'
     ]
 
+}, {
+    // specular: 0xfff000,
+    // shininess: 50
 })
 
-console.log(RainMat.vertexShader);
+console.log(RainMat.fragmentShader);
+console.log(THREE.ShaderLib['shadow'].fragmentShader);
 
 // const vertexShader =  `
 //     attribute vec3 aPositionStart;
