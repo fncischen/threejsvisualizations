@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useMemo } from 'react'
 import Particles from "./components/particles/particles.js"
 import { Canvas, useFrame, useThree, extend} from 'react-three-fiber'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import RainParticles from "./components/particles/rainParticles.js";
 
 extend({ OrbitControls });
 
@@ -21,11 +22,11 @@ const CameraControls = (() => {
   const controls = useRef();
   // const Camera = new THREE.PerspectiveCamera({fov: 60, position: [0, 600, 600], near: 0.1, far: 5000});
   camera.position.x = 0;
-  camera.position.y = 600;
-  camera.position.z = 600;
-  camera.fov = 60;
+  camera.position.y = 0;
+  camera.position.z = 80;
+  camera.fov = 40;
   camera.near = 0.1;
-  camera.far = 5000;
+  camera.far = 10000;
 
   /// https://codeworkshop.dev/blog/2020-04-03-adding-orbit-controls-to-react-three-fiber/
   useFrame(() => {controls.current.update()})
@@ -46,9 +47,11 @@ function App() {
             <pointLight position={[0, -400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
             <pointLight position={[0, 0, 400]} intensity={4} distance={1000} decay={2} color={"white"}/>
             <pointLight position={[0, 0, -400]} intensity={4} distance={1000} decay={2} color={"white"}/>
-            <Particles/>
+            <spotLight position={[0,30,5]} color={"red"}/>
+            {/* <Particles/> */}
             {/* <BoxTest/> */}
             {/* <BoxTwo/> */}
+            <RainParticles/>
           {/* <Swarm mouse={mouse} count={20000} />
           <Effect />
           <Dolly /> */}
