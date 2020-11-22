@@ -23,7 +23,7 @@ const CameraControls = (() => {
   // const Camera = new THREE.PerspectiveCamera({fov: 60, position: [0, 600, 600], near: 0.1, far: 5000});
   camera.position.x = 0;
   camera.position.y = 0;
-  camera.position.z = 5;
+  camera.position.z = 20;
   camera.fov = 40;
   camera.near = 0.1;
   camera.far = 10000;

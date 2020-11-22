@@ -14,14 +14,16 @@ class RainParticleMaterial extends BaseAnimationMaterial{
         super(params);
 
         var shadowShader = THREE.ShaderLib['shadow'];
-        this.lights = false; 
+        this.vertexColors = THREE.VertexColors;
+        this.lights = true; 
+        this.side = THREE.DoubleSide;
         this.uniforms = THREE.UniformsUtils.merge([shadowShader.uniforms, this.uniforms])
         var testShader = `
-                uniform vec3 u_color;
+                uniform vec4 color;
 
                 void main() { 
 
-                gl_FragColor = vec4(1, 0, 0, 1);   // red
+                gl_FragColor = color;   // red
             
                 }
             `
@@ -42,6 +44,7 @@ RainParticleMaterial.prototype._concatVertexShader = function() {
     return [
         //"#DEFINE PI =  3.1415926535897932384626433832795",
 
+        
         this._concatParameters(),
 
         this._concatFunctions(),
@@ -61,11 +64,15 @@ RainParticleMaterial.prototype._concatVertexShader = function() {
 const RainMat = new RainParticleMaterial({
     uniforms: {
         uPosition: {type: 'v3', value: [0,0,0]},
-        uDuration: {type: 'f', value: 5},
+        uDuration: {type: 'f', value: 0.5},
         uProgress: {type: 'f', value: 0},
-        color: {type: 'v3', value: [0,0.5,0]},
-        opacity: {type: 'f', value: 0.25}
+        color: {type: 'v3', value: [0.7,0.1,0]},
+        opacity: {type: 'f', value: 0.1}
       },
+    
+    emissive: "#212121",
+    flatShading: false,
+    roughness: 0.1,
 
     shaderFunctions: [
         ShaderChunk['quat_from_axis_angle'],
@@ -101,13 +108,13 @@ const RainMat = new RainParticleMaterial({
     ]
 
 }, {
+
     // specular: 0xfff000,
     // shininess: 50
 })
 
 console.log(RainMat.fragmentShader);
 console.log(THREE.ShaderLib['shadow'].fragmentShader);
-
 // const vertexShader =  `
 //     attribute vec3 aPositionStart;
 //     attribute vec3 aPositionEnd;
