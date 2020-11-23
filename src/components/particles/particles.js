@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import React, {useRef,useEffect } from 'react'
 
-import ParticleMaterial from "../shaders/ParticleMaterial.js"
+import particleMaterial from "../shaders/ParticleMaterial.js"
 
-export default function Particles(props){
+export default function Particles({enabled}){
 
     // https://codepen.io/zadvorsky/pen/qOYqGv?editors=1010
     var prefabGeometry;
@@ -31,25 +31,27 @@ export default function Particles(props){
     const fillBufferData = (() => {
         // then insert shader 
         // prefabBufferGeometry = new THREE.BufferGeometry();  
-        prefabBufferGeometry.setAttribute('aOffset', new THREE.BufferAttribute(new Float32Array(particleCount),1));
+        var prefabVerticiesLength = prefabGeometry.vertices.length; 
+
+        prefabBufferGeometry.setAttribute('aOffset', new THREE.BufferAttribute(new Float32Array(particleCount * prefabVerticiesLength),1));
         aOffset = prefabBufferGeometry.getAttribute('aOffset');
 
-        prefabBufferGeometry.setAttribute('aStartPosition', new THREE.BufferAttribute(new Float32Array(particleCount*3), 3));
+        prefabBufferGeometry.setAttribute('aStartPosition', new THREE.BufferAttribute(new Float32Array(particleCount*3 * prefabVerticiesLength), 3));
         aStartPosition = prefabBufferGeometry.getAttribute('aStartPosition');
 
-        prefabBufferGeometry.setAttribute('aControlPoint1', new THREE.BufferAttribute(new Float32Array(particleCount*3), 3));
+        prefabBufferGeometry.setAttribute('aControlPoint1', new THREE.BufferAttribute(new Float32Array(particleCount*3 * prefabVerticiesLength), 3));
         aControlPoint1 = prefabBufferGeometry.getAttribute('aControlPoint1');
 
-        prefabBufferGeometry.setAttribute('aControlPoint2', new THREE.BufferAttribute(new Float32Array(particleCount*3), 3));
+        prefabBufferGeometry.setAttribute('aControlPoint2', new THREE.BufferAttribute(new Float32Array(particleCount*3 * prefabVerticiesLength), 3));
         aControlPoint2 = prefabBufferGeometry.getAttribute('aControlPoint2');
 
-        prefabBufferGeometry.setAttribute('aEndPosition', new THREE.BufferAttribute(new Float32Array(particleCount*3), 3));
+        prefabBufferGeometry.setAttribute('aEndPosition', new THREE.BufferAttribute(new Float32Array(particleCount*3 * prefabVerticiesLength), 3));
         aEndPosition = prefabBufferGeometry.getAttribute('aEndPosition');
         // console.log(aEndPosition.array);
-        prefabBufferGeometry.setAttribute('aAxisAngle', new THREE.BufferAttribute(new Float32Array(particleCount*4),4));
+        prefabBufferGeometry.setAttribute('aAxisAngle', new THREE.BufferAttribute(new Float32Array(particleCount*4 * prefabVerticiesLength),4));
         aAxisAngle = prefabBufferGeometry.getAttribute('aAxisAngle');
 
-        prefabBufferGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(particleCount*3) ,3));
+        prefabBufferGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(particleCount*3 * prefabVerticiesLength) ,3));
         aColor = prefabBufferGeometry.getAttribute('color');
 
         console.log(aColor + " buffer geometry");
@@ -309,7 +311,9 @@ export default function Particles(props){
 
 
     const initializeParticles = (() => {
+            console.log("particles enabled bool: " + enabled)
             mParticleSystem = useRef();
+            
             prefabBufferGeometry = new THREE.BufferGeometry(); 
             generatePositionAndIndexBuffers(); // why i messed up 
             fillBufferData();
@@ -318,10 +322,12 @@ export default function Particles(props){
 
         
     initializeParticles();
+    
 
-    useEffect(() => {
-        tick();
-    })
+        useEffect(() => {
+            tick();
+        }, [enabled])
+
 
     const tick = (() => {
         update();
@@ -336,15 +342,22 @@ export default function Particles(props){
 
     const update = (() => {
         // mControls.update();
+       //console.log(mParticleSystem.current.material);
        mParticleSystem.current.material.uniforms['uTime'].value = mTime;
-
 
     })
 
-    return(
-        <mesh ref={mParticleSystem} args={[prefabBufferGeometry, ParticleMaterial]}>
-        </mesh>
-    )
+    // https://www.robinwieruch.de/conditional-rendering-react
+
+        return(
+            <group>
+                <pointLight position={[0, 400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
+                <pointLight position={[0, -400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
+                <pointLight position={[0, 0, 400]} intensity={4} distance={1000} decay={2} color={"white"}/>
+                <pointLight position={[0, 0, -400]} intensity={4} distance={1000} decay={2} color={"white"}/> 
+                <mesh ref={mParticleSystem} args={[prefabBufferGeometry, particleMaterial]}>
+            </mesh></group>
+        )
 }
 
 
