@@ -10,6 +10,7 @@ export default class BaseAnimationMaterial extends THREE.ShaderMaterial{
         this.shaderVertexInit = [];
         this.shaderTransformNormal = [];
         this.shaderTransformPosition = [];
+        this.mainVertexFunctions = [];
 
         this.setValues(parameters);
     }
