@@ -2,7 +2,7 @@
 
 ![alt text](./threejsvisualizations.gif)
 
-![alt text}(./rainparticlevisualizations.gif)
+![alt text](https://github.com/fncischen/threejsvisualizations/blob/main/rainparticlevisualizations.gif)
 
 This Github repo explores three.js visualizations. 
 
