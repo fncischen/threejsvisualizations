@@ -3,7 +3,7 @@ import React, {useRef,useEffect} from 'react'
 import {useFrame} from 'react-three-fiber'
 import RainMat from "../shaders/RainParticleMaterial.js";
 
-export default function RainParticles(props) {
+export default function RainParticles({enabled}) {
 
     var mParticleSystem;
     var prefabGeometry;
@@ -77,7 +77,7 @@ export default function RainParticles(props) {
 
         for (let x = -S; x < S; x += 1) {
             for (let z = -S; z < S; z += 1) {
-              xzcoords.push(x / (S / 200) + 1, z / (S / 200) + 1);
+              xzcoords.push(x / (S / 150) + 1, z / (S / 150) + 1);
               // this meanss between -S and S, the xz coordinates will 
 
               // x/4 + 1 , z/4 + 1 // iterate every z/4 + 1 (offset). // -19 .... 1, 5/4, 6/4, 7/4, 2, 9/4, 10/4, 11/4, 3 ... -19 (difference of 1/4) //    
@@ -174,8 +174,10 @@ export default function RainParticles(props) {
     })
 
     const initializeParticles = (() => {
-        mParticleSystem = useRef();
-        pLight = useRef();
+         console.log("rain particles enabled bool: " + enabled)
+         
+          mParticleSystem = useRef();
+          pLight = useRef();
         // particleDimension; // check 
         prefabGeometry =  new THREE.OctahedronGeometry(1,0) // dont use buffer geometries
         // since we want verticies 
@@ -183,15 +185,16 @@ export default function RainParticles(props) {
         setupShaderProperties(); // why i messed up 
         setupPositionAndIndexBuffer();
 
-        console.log(prefabBufferGeometry);
+        // console.log(prefabBufferGeometry);
 
     })
 
     initializeParticles();
     console.log('test');
-    useEffect(() =>{
-        tick();
-    })
+
+      useEffect(() =>{
+          tick();
+      }, [enabled])
 
     const tick = (() => {
         update();
@@ -206,40 +209,39 @@ export default function RainParticles(props) {
     const update = (() => {
         // mControls.update();
        // mParticleSystem.current.material.uniforms['uTime'].value = mTime;
-       mParticleSystem.current.material.uniforms['uProgress'].value = mTime; 
-       // console.log(mParticleSystem.current.material.uniforms['uDuration'].value);
-       // console.log(mParticleSystem.current.material.uniforms['uP'].value)
-        // console.log(mTime);
-       let p = mParticleSystem.current.material.uniforms['uProgress'].value * 2 - 1;
-       p = 1 - p * p; 
-       const newColor = new THREE.Color().setHSL(0.75 + p * 0.25, 0.7, 0.4);
-       // console.log(newColor);
-       let color = [newColor.r, newColor.g, newColor.b]
-       pLight.current.color = newColor;
-       // mParticleSystem.current.material.uniforms['color'].value = color; 
+      //  console.log("rain particles enabled bool: " + enabled)
+          mParticleSystem.current.material.uniforms['uProgress'].value = mTime; 
+          let p = mParticleSystem.current.material.uniforms['uProgress'].value * 2 - 1;
+          p = 1 - p * p; 
+          const newColor = new THREE.Color().setHSL(0.75 + p * 0.25, 0.7, 0.4);
+          // console.log(newColor);
+          let color = [newColor.r, newColor.g, newColor.b]
+          pLight.current.color = newColor;
+
+          // mParticleSystem.current.material.uniforms['color'].value = color; 
     })
 
 
 
     // initialize values 
     // mParticleSystem.current.material.uniforms['uProgress'] = 
+      return (
+          <group>
+          <mesh geometry={new THREE.IcosahedronGeometry(1, 2)} material={new THREE.MeshStandardMaterial({
+              flatShading: false,
+              roughness: 0.1,
+              metalness: 0.7
+          })} position={[0,0,0]}/>
+          <mesh geometry={new THREE.BoxGeometry(440, 440, 440)} material={new THREE.MeshPhongMaterial({color: "black", emissive: "black", side: THREE.BackSide })}/>
+          <mesh ref={mParticleSystem} args={[prefabBufferGeometry, RainMat]} castShadow={true}>
+          </mesh>
 
-    return (
-        <group>
-        <mesh geometry={new THREE.IcosahedronGeometry(1, 2)} material={new THREE.MeshStandardMaterial({
-            flatShading: false,
-            roughness: 0.1,
-            metalness: 0.7
-        })} position={[0,0,0]}/>
-        <mesh geometry={new THREE.BoxGeometry(440, 440, 440)} material={new THREE.MeshPhongMaterial({color: "black", emissive: "black", side: THREE.BackSide })}/>
-        <mesh ref={mParticleSystem} args={[prefabBufferGeometry, RainMat]} castShadow={true}>
-        </mesh>
+          {/* <ambientLight color={"white"} distance={0.1}/> */}
 
-        {/* <ambientLight color={"white"} distance={0.1}/> */}
+          <spotLight position={[0,30,30]} intensity={0.1} distance={5} decay={Math.PI/2} />
+          <pointLight ref={pLight} color={"black"} position={[0,25,0]} intensity={5} distance={200} decay={Math.PI/2} />
 
-        <spotLight position={[0,30,30]} intensity={0.1} distance={5} decay={Math.PI/2} />
-        <pointLight ref={pLight} color={"black"} position={[0,25,0]} intensity={5} distance={200} decay={Math.PI/2} />
+          </group>
+      )
 
-        </group>
-    )
 }

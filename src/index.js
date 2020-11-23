@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom'
-import React, { useCallback, useEffect, useRef, useMemo } from 'react'
+import React, { useCallback, useEffect, useRef, useMemo , useState} from 'react'
 import Particles from "./components/particles/particles.js"
 import { Canvas, useFrame, useThree, extend} from 'react-three-fiber'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -36,27 +36,43 @@ const CameraControls = (() => {
 })
 
 function App() {
-    const mouse = useRef([0, 0])
+    const [rainParticleEnabled, onRainParticleEnabled] = useState(false);
+
+    // https://dev.to/alexkhismatulin/update-boolean-state-right-with-react-hooks-3k2i
+  
+    const onSwitchToRainParticles = (() => {
+        console.log("test "+ rainParticleEnabled)
+        if (rainParticleEnabled == true){
+            onRainParticleEnabled(false);        
+            setTimeout(100000)
+
+        }
+        else {
+            onRainParticleEnabled(true); 
+            setTimeout(100000)
+
+        }
+
+
+    })
+
+    useEffect(() => {
+      setTimeout(100000)
+    }, [rainParticleEnabled])
 
     return (
+      <div className="App">
+        <button onClick={onSwitchToRainParticles}>Switch to Particle Stream</button>
         <Canvas style={{height: 500, color: "FF0000"}}>
             <CameraControls/>
             <scene name="Scene">
-            {/* <pointLight position={[0, 400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
-            <pointLight position={[0, -400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
-            <pointLight position={[0, 0, 400]} intensity={4} distance={1000} decay={2} color={"white"}/>
-            <pointLight position={[0, 0, -400]} intensity={4} distance={1000} decay={2} color={"white"}/> */}
-            {/* <spotLight position={[0,5,0]} color={"red"} intensity={100} distance={1000}/> */}
-            
-            {/* <Particles/> */}
-            {/* <BoxTest/> */}
-            {/* <BoxTwo/> */}
-            <RainParticles/>
-          {/* <Swarm mouse={mouse} count={20000} />
-          <Effect />
-          <Dolly /> */}
+
+            { rainParticleEnabled ? <Particles enabled={rainParticleEnabled}/> :
+             <RainParticles enabled={rainParticleEnabled}/>}
+
           </scene>
         </Canvas>
+        </div>
     )
   }
   

@@ -3,7 +3,7 @@ import React, {useRef,useEffect } from 'react'
 
 import particleMaterial from "../shaders/ParticleMaterial.js"
 
-export default function Particles(props){
+export default function Particles({enabled}){
 
     // https://codepen.io/zadvorsky/pen/qOYqGv?editors=1010
     var prefabGeometry;
@@ -311,7 +311,9 @@ export default function Particles(props){
 
 
     const initializeParticles = (() => {
+            console.log("particles enabled bool: " + enabled)
             mParticleSystem = useRef();
+            
             prefabBufferGeometry = new THREE.BufferGeometry(); 
             generatePositionAndIndexBuffers(); // why i messed up 
             fillBufferData();
@@ -320,10 +322,12 @@ export default function Particles(props){
 
         
     initializeParticles();
+    
 
-    useEffect(() => {
-        tick();
-    })
+        useEffect(() => {
+            tick();
+        }, [enabled])
+
 
     const tick = (() => {
         update();
@@ -338,15 +342,22 @@ export default function Particles(props){
 
     const update = (() => {
         // mControls.update();
+       //console.log(mParticleSystem.current.material);
        mParticleSystem.current.material.uniforms['uTime'].value = mTime;
-
 
     })
 
-    return(
-        <mesh ref={mParticleSystem} args={[prefabBufferGeometry, particleMaterial]}>
-        </mesh>
-    )
+    // https://www.robinwieruch.de/conditional-rendering-react
+
+        return(
+            <group>
+                <pointLight position={[0, 400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
+                <pointLight position={[0, -400, 0]} intensity={4} distance={1000} decay={2} color={"white"}/>
+                <pointLight position={[0, 0, 400]} intensity={4} distance={1000} decay={2} color={"white"}/>
+                <pointLight position={[0, 0, -400]} intensity={4} distance={1000} decay={2} color={"white"}/> 
+                <mesh ref={mParticleSystem} args={[prefabBufferGeometry, particleMaterial]}>
+            </mesh></group>
+        )
 }
 
 
