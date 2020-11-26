@@ -93,12 +93,15 @@ class RainParticleMaterialTwo extends THREE.MeshStandardMaterial {
             '#include <begin_vertex>',
             main.replace('gl_Position =', 'vec3 transformed =')
           );
+
+        console.log(shader.fragmentShader);
     }
 
 }
 
 var RainMat2 = new RainParticleMaterialTwo({
-    color: "#EFEFEF",
+    color: "#0037b4",
+    // color: "#27408B",
     emissive: "#212121",
     flatShading: true,
     roughness: 0.1,
@@ -106,7 +109,7 @@ var RainMat2 = new RainParticleMaterialTwo({
 
     uniforms: {
         uPosition: {type: 'v3', value: [0,0,0]},
-        mDuration: {type: 'f', value: 0.5},
+        mDuration: {type: 'f', value: 100},
         uProgress: {type: 'f', value: 0},
       },
 

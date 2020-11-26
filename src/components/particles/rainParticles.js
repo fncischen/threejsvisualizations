@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import React, {useRef,useEffect} from 'react'
-import {useFrame} from 'react-three-fiber'
+import React, {useRef,useEffect, useFrame} from 'react'
+// import {useFrame} from 'react-three-fiber'
 import RainMat from "../shaders/RainParticleMaterial.js";
 import RainMat2 from "../shaders/RainParticleMaterialTwo.js";
 
@@ -9,17 +9,18 @@ export default function RainParticles({enabled}) {
     var mParticleSystem;
     var prefabGeometry;
     var prefabBufferGeometry;
+    var mSphere; 
     
-    var startYheight = 20;
-    var endYheight = -20;
+    var startYheight = 50;
+    var endYheight = -50;
 
     var multiplier; 
 
     var particleCount; 
     var mTime = 0;
-    var mDuration = 0.5; 
-    var mTimeStep = (1/60);
-    var S = 80; // particleDimension 
+    var mDuration = 100; 
+    var mTimeStep = 1/5;
+    var S = 120; // particleDimension 
     var progress = 0;
 
     var pLight; 
@@ -78,7 +79,7 @@ export default function RainParticles({enabled}) {
 
         for (let x = -S; x < S; x += 1) {
             for (let z = -S; z < S; z += 1) {
-              xzcoords.push(x / (S / 100) + 1, z / (S / 100) + 1);
+              xzcoords.push(x / (S / 30) + 1, z / (S / 30) + 1);
               // this meanss between -S and S, the xz coordinates will 
 
               // x/4 + 1 , z/4 + 1 // iterate every z/4 + 1 (offset). // -19 .... 1, 5/4, 6/4, 7/4, 2, 9/4, 10/4, 11/4, 3 ... -19 (difference of 1/4) //    
@@ -179,6 +180,7 @@ export default function RainParticles({enabled}) {
          
           mParticleSystem = useRef();
           pLight = useRef();
+          mSphere = useRef();
         // particleDimension; // check 
         prefabGeometry =  new THREE.OctahedronGeometry(1,0) // dont use buffer geometries
         // since we want verticies 
@@ -218,7 +220,7 @@ export default function RainParticles({enabled}) {
           // console.log(newColor);
           let color = [newColor.r, newColor.g, newColor.b]
           pLight.current.color = newColor;
-
+          mSphere.current.material.emissive = newColor; 
           // mParticleSystem.current.material.uniforms['color'].value = color; 
     })
 
@@ -228,7 +230,7 @@ export default function RainParticles({enabled}) {
     // mParticleSystem.current.material.uniforms['uProgress'] = 
       return (
           <group>
-          <mesh geometry={new THREE.IcosahedronGeometry(1, 2)} material={new THREE.MeshStandardMaterial({
+          <mesh ref={mSphere} geometry={new THREE.IcosahedronGeometry(1, 2)} material={new THREE.MeshStandardMaterial({
               flatShading: false,
               roughness: 0.1,
               metalness: 0.7
@@ -237,10 +239,26 @@ export default function RainParticles({enabled}) {
           <mesh ref={mParticleSystem} args={[prefabBufferGeometry, RainMat2]} castShadow={true}>
           </mesh>
 
-          <ambientLight color={"red"} distance={0.1}/>
+          <ambientLight color={"white"} distance={0.1}/>
 
-          <spotLight position={[0,0,0]} intensity={0.1} distance={5} decay={Math.PI/2} />
-          <pointLight ref={pLight} color={"#EFEFEF"} position={[0,0,0]} intensity={100} distance={20} decay={Math.PI/2} />
+          <spotLight position={[0,30,0]} intensity={0.1} distance={5} decay={Math.PI/2} />
+          <spotLight position={[0,-30,0]} intensity={0.1} distance={5} decay={Math.PI/2} />
+
+          <pointLight ref={pLight} color={"#EFEFEF"} position={[0,0,0]} intensity={20} distance={20} decay={Math.PI/2} />
+          
+          <pointLight  color={"#EFEFEF"} position={[30,0,0]} intensity={100} distance={20} decay={Math.PI/2} />
+          <pointLight color={"#EFEFEF"} position={[-30,0,0]} intensity={100} distance={20} decay={Math.PI/2} />
+          <pointLight  color={"#EFEFEF"} position={[0,0,40]} intensity={200} distance={40} decay={Math.PI/2} />
+          <pointLight  color={"#EFEFEF"} position={[0,0,-40]} intensity={200} distance={40} decay={Math.PI/2} />
+
+
+          {/* <pointLight ref={pLight} color={"#EFEFEF"} position={[10,0,10]} intensity={100} distance={20} decay={Math.PI/2} />
+          <pointLight ref={pLight} color={"#EFEFEF"} position={[-10,0,-10]} intensity={100} distance={20} decay={Math.PI/2} />
+          <pointLight ref={pLight} color={"#EFEFEF"} position={[-10,0,10]} intensity={100} distance={20} decay={Math.PI/2} />
+          <pointLight ref={pLight} color={"#EFEFEF"} position={[10,0,-10]} intensity={100} distance={20} decay={Math.PI/2} /> */}
+
+
+
 
           </group>
       )

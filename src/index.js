@@ -23,7 +23,7 @@ const CameraControls = (() => {
   // const Camera = new THREE.PerspectiveCamera({fov: 60, position: [0, 600, 600], near: 0.1, far: 5000});
   camera.position.x = 0;
   camera.position.y = 0;
-  camera.position.z = 20;
+  camera.position.z = 120;
   camera.fov = 40;
   camera.near = 0.1;
   camera.far = 10000;
@@ -63,7 +63,7 @@ function App() {
     return (
       <div className="App">
         {/* <button onClick={onSwitchToRainParticles}>Switch to Particle Stream</button> */}
-        <Canvas style={{height: 500, color: "FF0000"}}>
+        <Canvas style={{height: 750, color: "FF0000"}}>
             <CameraControls/>
             <scene name="Scene">
 
