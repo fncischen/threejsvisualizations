@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import React, {useRef,useEffect} from 'react'
 import {useFrame} from 'react-three-fiber'
 import RainMat from "../shaders/RainParticleMaterial.js";
+import RainMat2 from "../shaders/RainParticleMaterialTwo.js";
 
 export default function RainParticles({enabled}) {
 
@@ -17,7 +18,7 @@ export default function RainParticles({enabled}) {
     var particleCount; 
     var mTime = 0;
     var mDuration = 0.5; 
-    var mTimeStep = (1/2000);
+    var mTimeStep = (1/60);
     var S = 80; // particleDimension 
     var progress = 0;
 
@@ -77,7 +78,7 @@ export default function RainParticles({enabled}) {
 
         for (let x = -S; x < S; x += 1) {
             for (let z = -S; z < S; z += 1) {
-              xzcoords.push(x / (S / 150) + 1, z / (S / 150) + 1);
+              xzcoords.push(x / (S / 100) + 1, z / (S / 100) + 1);
               // this meanss between -S and S, the xz coordinates will 
 
               // x/4 + 1 , z/4 + 1 // iterate every z/4 + 1 (offset). // -19 .... 1, 5/4, 6/4, 7/4, 2, 9/4, 10/4, 11/4, 3 ... -19 (difference of 1/4) //    
@@ -93,14 +94,14 @@ export default function RainParticles({enabled}) {
         // prefabBufferGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(particleCount * prefabVerticiesLength),3)); // keep for consistency
         prefabBufferGeometry.setAttribute('aPositionStart', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
         prefabBufferGeometry.setAttribute('aPositionEnd', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
-        prefabBufferGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
+        // prefabBufferGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
         prefabBufferGeometry.setAttribute("aOffset", new THREE.BufferAttribute(new Float32Array(multiplier * prefabVerticiesLength),1));
 
         // var posBuffer = prefabBufferGeometry.getAttribute('position');
         var aStartPosBuffer = prefabBufferGeometry.getAttribute('aPositionStart');
         var aEndPosBuffer = prefabBufferGeometry.getAttribute('aPositionEnd');
         var aOffset = prefabBufferGeometry.getAttribute('aOffset');
-        var aColor = prefabBufferGeometry.getAttribute('color');
+        // var aColor = prefabBufferGeometry.getAttribute('color');
 
 
        
@@ -147,29 +148,29 @@ export default function RainParticles({enabled}) {
         //       value: [0, 0, 0]
         //     }
         //   };
-        var color = new THREE.Color();
-        var h,s,l;
+        // var color = new THREE.Color();
+        // var h,s,l;
 
-        for(var i = 0, offset = 0; i < multiplier; i++) {
-            // h = i/particleCount * 50;
-            // // s = THREE.MathUtils.randFloatSpread(0.59, 0.61);
-            // l = THREE.MathUtils.randFloatSpread(0.7, 0.9);
-            //  s = 0.8;
-            // l = 0.5;
-            h = 0.7;
-            l = 0.6;
-            s = 0.8;
+        // for(var i = 0, offset = 0; i < multiplier; i++) {
+        //     // h = i/particleCount * 50;
+        //     // // s = THREE.MathUtils.randFloatSpread(0.59, 0.61);
+        //     // l = THREE.MathUtils.randFloatSpread(0.7, 0.9);
+        //     //  s = 0.8;
+        //     // l = 0.5;
+        //     h = 0.7;
+        //     l = 0.6;
+        //     s = 0.8;
 
-            color.setHSL(h,s,l);
-            // console.log("loop")
-            for(var j = 0; j < prefabGeometry.vertices.length; j++) {
-                aColor.array[offset++] = 0.5;
-                aColor.array[offset++] = 0;
-                aColor.array[offset++] = 0; 
-                // console.log('loop');
-            }
+        //     color.setHSL(h,s,l);
+        //     // console.log("loop")
+        //     for(var j = 0; j < prefabGeometry.vertices.length; j++) {
+        //         aColor.array[offset++] = 0.5;
+        //         aColor.array[offset++] = 0;
+        //         aColor.array[offset++] = 0; 
+        //         // console.log('loop');
+        //     }
 
-        } 
+        // } 
         
     })
 
@@ -233,13 +234,13 @@ export default function RainParticles({enabled}) {
               metalness: 0.7
           })} position={[0,0,0]}/>
           <mesh geometry={new THREE.BoxGeometry(440, 440, 440)} material={new THREE.MeshPhongMaterial({color: "black", emissive: "black", side: THREE.BackSide })}/>
-          <mesh ref={mParticleSystem} args={[prefabBufferGeometry, RainMat]} castShadow={true}>
+          <mesh ref={mParticleSystem} args={[prefabBufferGeometry, RainMat2]} castShadow={true}>
           </mesh>
 
-          {/* <ambientLight color={"white"} distance={0.1}/> */}
+          <ambientLight color={"red"} distance={0.1}/>
 
-          <spotLight position={[0,30,30]} intensity={0.1} distance={5} decay={Math.PI/2} />
-          <pointLight ref={pLight} color={"black"} position={[0,25,0]} intensity={5} distance={200} decay={Math.PI/2} />
+          <spotLight position={[0,0,0]} intensity={0.1} distance={5} decay={Math.PI/2} />
+          <pointLight ref={pLight} color={"#EFEFEF"} position={[0,0,0]} intensity={100} distance={20} decay={Math.PI/2} />
 
           </group>
       )

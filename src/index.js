@@ -62,7 +62,7 @@ function App() {
 
     return (
       <div className="App">
-        <button onClick={onSwitchToRainParticles}>Switch to Particle Stream</button>
+        {/* <button onClick={onSwitchToRainParticles}>Switch to Particle Stream</button> */}
         <Canvas style={{height: 500, color: "FF0000"}}>
             <CameraControls/>
             <scene name="Scene">
