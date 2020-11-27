@@ -19,8 +19,8 @@ export default function RainParticles({enabled}) {
     var particleCount; 
     var mTime = 0;
     var mDuration = 100; 
-    var mTimeStep = 1/5;
-    var S = 120; // particleDimension 
+    var mTimeStep = 1/20;
+    var S = 100; // particleDimension 
     var progress = 0;
 
     var pLight; 
@@ -79,7 +79,7 @@ export default function RainParticles({enabled}) {
 
         for (let x = -S; x < S; x += 1) {
             for (let z = -S; z < S; z += 1) {
-              xzcoords.push(x / (S / 30) + 1, z / (S / 30) + 1);
+              xzcoords.push(x / (S / 200) + 2, z / (S / 200) + 2);
               // this meanss between -S and S, the xz coordinates will 
 
               // x/4 + 1 , z/4 + 1 // iterate every z/4 + 1 (offset). // -19 .... 1, 5/4, 6/4, 7/4, 2, 9/4, 10/4, 11/4, 3 ... -19 (difference of 1/4) //    

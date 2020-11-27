@@ -100,7 +100,7 @@ class RainParticleMaterialTwo extends THREE.MeshStandardMaterial {
 }
 
 var RainMat2 = new RainParticleMaterialTwo({
-    color: "#0037b4",
+    color: "#4EEE94",
     // color: "#27408B",
     emissive: "#212121",
     flatShading: true,
