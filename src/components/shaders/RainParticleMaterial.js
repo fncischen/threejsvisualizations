@@ -66,8 +66,8 @@ const RainMat = new RainParticleMaterial({
         uPosition: {type: 'v3', value: [0,0,0]},
         uDuration: {type: 'f', value: 0.5},
         uProgress: {type: 'f', value: 0},
-        color: {type: 'v3', value: [0.7,0.1,0]},
-        opacity: {type: 'f', value: 0.1}
+        color: {type: 'v3', value: [1,0,0]},
+        opacity: {type: 'f', value: 0}
       },
     
     emissive: "#212121",
@@ -104,7 +104,7 @@ const RainMat = new RainParticleMaterial({
         'basePosition *= scale;',
         'basePosition *= min(1.0, max(0.0, -10.0 + distance(vec3(uPosition.x, uPosition.y, newPosition.z), newPosition)));',
         'vec3 finalPos = newPosition + basePosition;',
-        'gl_Position =   projectionMatrix * viewMatrix * modelMatrix * vec4(finalPos, 1.0);'
+        'gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(finalPos, 1.0);'
     ]
 
 }, {
@@ -113,8 +113,19 @@ const RainMat = new RainParticleMaterial({
     // shininess: 50
 })
 
-console.log(RainMat.fragmentShader);
-console.log(THREE.ShaderLib['shadow'].fragmentShader);
+// console.log(RainMat.fragmentShader);
+// console.log(THREE.ShaderChunk['common'])
+// console.log(THREE.ShaderChunk['packing'])
+// console.log(THREE.ShaderChunk['bsdfs']);
+// console.log(THREE.ShaderChunk['shadowmap_pars_fragment'])
+// console.log(THREE.ShaderChunk['shadowmask_pars_fragment'])
+// console.log(THREE.ShaderLib['shadow'].fragmentShader);
+// console.log(THREE.ShaderChunk['tonemapping_fragment'])
+// console.log(THREE.ShaderChunk['encodings_fragment'])
+// console.log(THREE.ShaderChunk['fog_fragment'])
+
+
+
 // const vertexShader =  `
 //     attribute vec3 aPositionStart;
 //     attribute vec3 aPositionEnd;
