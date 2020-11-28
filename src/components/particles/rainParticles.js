@@ -76,10 +76,11 @@ export default function RainParticles({enabled}) {
     const setupShaderProperties = (() => {
 
         var xzcoords = []
+        var boxRadius = Math.sqrt(2 * (205) * (205));
 
         for (let x = -S; x < S; x += 1) {
             for (let z = -S; z < S; z += 1) {
-              xzcoords.push(x / (S / 200) + 2, z / (S / 200) + 2);
+              xzcoords.push(x / (S / 200) + 5, z / (S / 200) + 5);
               // this meanss between -S and S, the xz coordinates will 
 
               // x/4 + 1 , z/4 + 1 // iterate every z/4 + 1 (offset). // -19 .... 1, 5/4, 6/4, 7/4, 2, 9/4, 10/4, 11/4, 3 ... -19 (difference of 1/4) //    
@@ -95,14 +96,14 @@ export default function RainParticles({enabled}) {
         // prefabBufferGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(particleCount * prefabVerticiesLength),3)); // keep for consistency
         prefabBufferGeometry.setAttribute('aPositionStart', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
         prefabBufferGeometry.setAttribute('aPositionEnd', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
-        // prefabBufferGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
+        prefabBufferGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(multiplier *3 * prefabVerticiesLength),3));
         prefabBufferGeometry.setAttribute("aOffset", new THREE.BufferAttribute(new Float32Array(multiplier * prefabVerticiesLength),1));
 
         // var posBuffer = prefabBufferGeometry.getAttribute('position');
         var aStartPosBuffer = prefabBufferGeometry.getAttribute('aPositionStart');
         var aEndPosBuffer = prefabBufferGeometry.getAttribute('aPositionEnd');
         var aOffset = prefabBufferGeometry.getAttribute('aOffset');
-        // var aColor = prefabBufferGeometry.getAttribute('color');
+        var aColor = prefabBufferGeometry.getAttribute('color');
 
 
        
@@ -149,29 +150,41 @@ export default function RainParticles({enabled}) {
         //       value: [0, 0, 0]
         //     }
         //   };
-        // var color = new THREE.Color();
-        // var h,s,l;
+        var color = new THREE.Color();
+        var h,s,l;
 
-        // for(var i = 0, offset = 0; i < multiplier; i++) {
-        //     // h = i/particleCount * 50;
-        //     // // s = THREE.MathUtils.randFloatSpread(0.59, 0.61);
-        //     // l = THREE.MathUtils.randFloatSpread(0.7, 0.9);
-        //     //  s = 0.8;
-        //     // l = 0.5;
-        //     h = 0.7;
-        //     l = 0.6;
-        //     s = 0.8;
 
-        //     color.setHSL(h,s,l);
-        //     // console.log("loop")
-        //     for(var j = 0; j < prefabGeometry.vertices.length; j++) {
-        //         aColor.array[offset++] = 0.5;
-        //         aColor.array[offset++] = 0;
-        //         aColor.array[offset++] = 0; 
-        //         // console.log('loop');
-        //     }
+        for(var i = 0, p = 0, offset = 0; i < multiplier; p +=2, i++) {
+            var pointx = xzcoords[p];
+            var pointz = xzcoords[p+1];
 
-        // } 
+            var radius = Math.sqrt(pointx * pointx + pointz * pointz)
+            var angle = Math.tan(pointz/pointx);
+
+            // what sort of relationship do we want to make with the radius and angle 
+            // the more smaller the radius, the brighter 
+
+            var h = THREE.MathUtils.randFloat(0.60, 0.77)  * (boxRadius-radius / boxRadius) * 2.5;
+            // var h = THREE.MathUtils.clamp( (boxRadius-radius / boxRadius), 0.1,0.81)
+            // var h = 0.3 * (boxRadius - radius)/boxRadius;
+            var s = 0.75;
+            var l =  0.25 ;
+            //  s = 0.8;
+            // // l = 0.5;
+            // h = 0.7;
+            // l = 0.6;
+            // s = 0.8;
+            
+            color.setHSL(h,s,l);
+            // console.log("loop")
+            for(var j = 0; j < prefabGeometry.vertices.length; j++) {
+                aColor.array[offset++] = color.r;
+                aColor.array[offset++] = color.g;
+                aColor.array[offset++] = color.b; 
+                // console.log('loop');
+            }
+
+        } 
         
     })
 
@@ -220,7 +233,7 @@ export default function RainParticles({enabled}) {
           // console.log(newColor);
           let color = [newColor.r, newColor.g, newColor.b]
           pLight.current.color = newColor;
-          mSphere.current.material.emissive = newColor; 
+          // mSphere.current.material.emissive = newColor; 
           // mParticleSystem.current.material.uniforms['color'].value = color; 
     })
 
@@ -231,25 +244,26 @@ export default function RainParticles({enabled}) {
       return (
           <group>
           <mesh ref={mSphere} geometry={new THREE.IcosahedronGeometry(1, 2)} material={new THREE.MeshStandardMaterial({
+              color: "#EFEFEF",
               flatShading: false,
               roughness: 0.1,
               metalness: 0.7
           })} position={[0,0,0]}/>
-          <mesh geometry={new THREE.BoxGeometry(440, 440, 440)} material={new THREE.MeshPhongMaterial({color: "black", emissive: "black", side: THREE.BackSide })}/>
+          <mesh geometry={new THREE.BoxGeometry(700, 700, 700)} material={new THREE.MeshPhongMaterial({color: "black", emissive: "black", side: THREE.BackSide })}/>
           <mesh ref={mParticleSystem} args={[prefabBufferGeometry, RainMat2]} castShadow={true}>
           </mesh>
 
-          <ambientLight color={"white"} distance={0.1}/>
+          <ambientLight color={"FFF000"} distance={0.1}/>
 
           <spotLight position={[0,30,0]} intensity={0.1} distance={5} decay={Math.PI/2} />
           <spotLight position={[0,-30,0]} intensity={0.1} distance={5} decay={Math.PI/2} />
 
           <pointLight ref={pLight} color={"#EFEFEF"} position={[0,0,0]} intensity={20} distance={20} decay={Math.PI/2} />
           
-          <pointLight  color={"#EFEFEF"} position={[30,0,0]} intensity={100} distance={20} decay={Math.PI/2} />
-          <pointLight color={"#EFEFEF"} position={[-30,0,0]} intensity={100} distance={20} decay={Math.PI/2} />
-          <pointLight  color={"#EFEFEF"} position={[0,0,40]} intensity={200} distance={40} decay={Math.PI/2} />
-          <pointLight  color={"#EFEFEF"} position={[0,0,-40]} intensity={200} distance={40} decay={Math.PI/2} />
+          {/* <pointLight ref={pLight} color={"red"} position={[30,0,0]} intensity={100} distance={400} decay={Math.PI/2} />
+          <pointLight ref={pLight} color={"red"} position={[-30,0,0]} intensity={100} distance={400} decay={Math.PI/2} />
+          <pointLight ref={pLight} color={"red"} position={[0,0,40]} intensity={200} distance={400} decay={Math.PI/2} />
+          <pointLight ref={pLight} color={"red"} position={[0,0,-40]} intensity={200} distance={400} decay={Math.PI/2} /> */}
 
 
           {/* <pointLight ref={pLight} color={"#EFEFEF"} position={[10,0,10]} intensity={100} distance={20} decay={Math.PI/2} />
