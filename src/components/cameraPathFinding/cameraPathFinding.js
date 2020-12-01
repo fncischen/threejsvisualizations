@@ -3,6 +3,9 @@
 
 import { Component, useEffect } from 'react';
 import * as THREE from 'react-three-fiber'; 
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+// import event handler for moving 
 
 class TouchPointScene{
     construtor() {
@@ -22,18 +25,49 @@ class TouchPointScene{
 }
 
 
+// button shader 
+
 export default function CameraPath(props){
 
     var controlPoints = props.controlPoints;
     var TouchPointScenes = []; // array of curves
     var buttonToClick = props.buttonToClick;
-    var camera = props.camera;
+
+    var camera = useRef()
     
     var timeStepRate = 0.1; // change timeStepRate; 
+
+    const loader = new GLTFLoader();
+
+    // load the buttons 
+
+    loader.load( 'path/to/model.glb', function ( gltf ) {   
+
+        // set up loader and appropriate reference via loader 
+        var fromButton = useRef();
+        var toButton = useRef();
+
+        // set up material
+        // set up shader
+        // etc 
+
+    }, undefined, function ( error ) {
+
+	    console.error( error );
+
+    } );
+
+
+
 
     // different states
     // in movement, from, to, 
     const [currentLocationIndex, atChangeLocation] = useState(0);
+
+    //
+    const [positionOfBackButton, setBackPathButton] = useState([])
+    const [positionOfToButton, setForwardPathButton] = useState([])
+
 
     // set up a series of beizer paths based on a given array 
     var intializePaths = () => {
@@ -99,7 +133,13 @@ export default function CameraPath(props){
 
     // current camera state, via index 
     return (
-        
+
+        // add event handler 
+        <group>
+        <camera ref={camera}/>
+        <object ref={fromButton}/>
+        <object ref={toButton}/>
+        </group>
     )
     // second, we need to be able to have camera follow these paths at each given point
 
