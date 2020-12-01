@@ -1,9 +1,12 @@
 /// cameraPathfinding reference
 // https://threejs.org/examples/#webgl_geometry_extrude_splines
 
-import { Component, useEffect } from 'react';
-import * as THREE from 'react-three-fiber'; 
+import { Component, useEffect,  } from 'react';
+import * as THREE from 'three'; 
+import {useLoader} from 'react-three-fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
 
 // import event handler for moving 
 
@@ -26,6 +29,15 @@ class TouchPointScene{
 
 
 // button shader 
+// blender should be real set up for shader, lighting, etc. 
+
+// set up blender tomorrow 
+// have right trigger for animation, blendshapes, morphtargets
+// think about 3d models, vfx, (study
+
+// im feeling blender is the way to go
+// import blender, d3js, and 
+// http://billdwhite.com/wordpress/2015/01/12/d3-in-3d-combining-d3-js-and-three-js/
 
 export default function CameraPath(props){
 
@@ -33,13 +45,20 @@ export default function CameraPath(props){
     var TouchPointScenes = []; // array of curves
     var buttonToClick = props.buttonToClick;
 
-    var camera = useRef()
+    const {
+        camera,
+        gl: {domElement}
+      } = useThree()
     
     var timeStepRate = 0.1; // change timeStepRate; 
 
     const loader = new GLTFLoader();
 
+    const buttonLeft = useLoader(loader, "models/left.gltf");
+    const buttonRight = useLoader(loader, "models/right.gltf");
+
     // load the buttons 
+      
 
     loader.load( 'path/to/model.glb', function ( gltf ) {   
 
@@ -58,7 +77,9 @@ export default function CameraPath(props){
     } );
 
 
-
+    // set up orbit controls but modify
+    // https://threejs.org/docs/index.html#examples/en/controls/OrbitControls
+    var controls = new OrbitControls(); // review this data structure 
 
     // different states
     // in movement, from, to, 
@@ -137,8 +158,12 @@ export default function CameraPath(props){
         // add event handler 
         <group>
         <camera ref={camera}/>
+
+
         <object ref={fromButton}/>
         <object ref={toButton}/>
+
+
         </group>
     )
     // second, we need to be able to have camera follow these paths at each given point
