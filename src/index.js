@@ -30,20 +30,20 @@ class App extends React.Component {
 
     // check for hooks 
     // https://stackoverflow.com/questions/57088861/react-setstate-hook-from-scroll-event-listener
-    handleScroll(e){
-      console.log("curent state :" + this.state);
+    // handleScroll(e){
+    //   console.log("curent state :" + this.state);
 
-      var newScrollY = window.scrollY;
-      var dY = newScrollY - this.state.previousY;
-      await this.setState({previousY: newScrollY, deltaY: dY})
-      setInterval(1000);
-      // take the delta between previous scrollY and current scrollY
-      // send it to the canvas object's camera
+    //   var newScrollY = window.scrollY;
+    //   var dY = newScrollY - this.state.previousY;
+    //   await this.setState({previousY: newScrollY, deltaY: dY})
+    //   setInterval(1000);
+    //   // take the delta between previous scrollY and current scrollY
+    //   // send it to the canvas object's camera
 
-      // use it to pan the camera 
+    //   // use it to pan the camera 
 
-      // retrive scroll data, send it to state, and then place it inside the vertical story dashboard 
-    }
+    //   // retrive scroll data, send it to state, and then place it inside the vertical story dashboard 
+    // }
 
     render() {
     return (            
