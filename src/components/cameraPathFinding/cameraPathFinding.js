@@ -3,30 +3,15 @@
 
 import { Component, useEffect,  } from 'react';
 import * as THREE from 'three'; 
-import {useLoader} from 'react-three-fiber';
+import {useLoader, addEffect} from 'react-three-fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { useStore } from ".store.js";
+import TouchPointScene from './TouchPointScene';
 
+// https://github.com/pmndrs/react-postprocessing
 
 // import event handler for moving 
-
-class TouchPointScene{
-    construtor() {
-        this.index = index;
-        this.previousPath = previousPath;
-        this.nextPath = nextPath; 
-        this.bufferGeometryPreviousPath = null; // dont require it, make it optional 
-        this.bufferGeometryNextPath = null; // dont require it, make it optional 
-
-    }
-
-    // optional beizer path generated via geometry 
-    // for debugging purposes 
-    generateBeizerPathGeometries() {
-
-    }
-}
-
 
 // button shader 
 // blender should be real set up for shader, lighting, etc. 
@@ -45,6 +30,9 @@ export default function CameraPath(props){
     var TouchPointScenes = []; // array of curves
     var buttonToClick = props.buttonToClick;
 
+    const actions = useStore(state => state.actions) // actions with methods to call 
+    // at different states of the event 
+    
     const {
         camera,
         gl: {domElement}
@@ -54,122 +42,62 @@ export default function CameraPath(props){
 
     const loader = new GLTFLoader();
 
-    const buttonLeft = useLoader(loader, "models/left.gltf");
-    const buttonRight = useLoader(loader, "models/right.gltf");
-
-    // load the buttons 
-      
-
-    loader.load( 'path/to/model.glb', function ( gltf ) {   
-
-        // set up loader and appropriate reference via loader 
-        var fromButton = useRef();
-        var toButton = useRef();
-
-        // set up material
-        // set up shader
-        // etc 
-
-    }, undefined, function ( error ) {
-
-	    console.error( error );
-
-    } );
-
+    const {nodes} = useLoader(loader, "models/left.gltf");
+    var leftobj = nodes[0]; // data type: obj  
+    
+    const {nodes} = useLoader(loader, "models/right.gltf");
+    var rightobj = nodes[0]; // data type: obj 
 
     // set up orbit controls but modify
     // https://threejs.org/docs/index.html#examples/en/controls/OrbitControls
     var controls = new OrbitControls(); // review this data structure 
-
-    // different states
-    // in movement, from, to, 
-    const [currentLocationIndex, atChangeLocation] = useState(0);
-
-    //
-    const [positionOfBackButton, setBackPathButton] = useState([])
-    const [positionOfToButton, setForwardPathButton] = useState([])
-
 
     // set up a series of beizer paths based on a given array 
     var intializePaths = () => {
         
         var Curves = [];
 
+        // we need a cleaner way of organizing this  
+
         for(var i = 0; i < controlPoints - 4; i+=4){
             
-            var bezierCurve = new THREE.CubicBezierCurve(controlPoints[i], controlPoints[i+1], controlPoints[i+2], controlPoints[i+3]);            
+            var bezierCurve = new THREE.CubicBezierCurve(controlPoints[i], controlPoints[i+1], controlPoints[i+2], controlPoints[i+3]);           
+            
             Curves.push(bezierCurve);
         }
 
         let touchPointSceneLength = Curves.length + 1; 
 
-        for(var i = 1; i < touchPointSceneLength; i++) {
+        for(var i = 1; i < touchPointSceneLength-1; i+=2) {
+
             var t = new TouchPointScene({index: i-1, previousPath: Curves[i-1], nextPath: Curves[i]});
+            var t1 = new TouchPointScene({index: i, previousPath: Curves[i], nextPath: Curves[i+1]});
+
             TouchPointScenes.push(t);
+            TouchPointScenes.push(t+1);
+
+            t1.previousTouchPoint = TouchPointScenes[i];
+            t.nextTouchPoint = TouchPointScenes[i+1]; 
         }
     }
 
-    // its like a state machine where you're switching between differet state
-    // each state carries same camera orbiting abilities, can select different objects (but not the ones far away)
-
-    // each control point is like a scene 
+    intializePaths();
+    actions.init(camera, TouchPointScenes);
+    
     var onCameraMove = (direction) => {
-        useEffect(() => { 
-            
-            var currentTouchScene = TouchPointScenes[currentLocationIndex];
-            
-            var nextPath; 
-            var finalDestination; 
-            var t; 
-
-            if(direction == "back") {
-                nextPath = currentTouchScene.previousPath;
-                finalDestination = nextPath.v4; 
-                t = 0; 
-            }
-            else if (direction == "forward") {
-                nextPath = currentTouchScene.nextPath;
-                finalDestination = nextPath.v0; 
-                t = 1;
-            }
-            
-            // use while statement to loop 
-            while(camera.position != finalDestination) {
-
-                t += timeStepRate;
-                // https://threejs.org/docs/#api/en/extras/core/Curve
-                camera.current.position = nextPath.getPointAt(t);
-            }
-
-            if(direction == "back") {
-                atChangeLocation(currentLocationIndex+1)
-            }
-            else if (direction == "forward") {
-                atChangeLocation(currentLocationIndex-1)
-
-            }
-
-        })
+        actions.startMove(direction);
     }
 
-    // current camera state, via index 
     return (
+        // https://codesandbox.io/embed/r3f-game-i2160
+        // https://github.com/pmndrs/zustand\
 
-        // add event handler 
         <group>
         <camera ref={camera}/>
 
-
-        <object ref={fromButton}/>
-        <object ref={toButton}/>
-
+        <primitive object={leftobj} onClick={onCameraMove("back")}/>
+        <primitive object={rightobj} onClick={onCameraMove("forward")}/>
 
         </group>
-    )
-    // second, we need to be able to have camera follow these paths at each given point
-
-    // we need event handlers to manage different phases of the camera path 
-    // this is very important for the template, since it allows you to control different touchpoints of the user journey 
-    
-    // this also allows you to rotate your camera 360, but allows you to contol the journey of the path 
+    ) 
 }

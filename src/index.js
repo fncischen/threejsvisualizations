@@ -4,6 +4,7 @@ import Particles from "./components/particles/particles.js"
 import { Canvas, useFrame, useThree, extend} from 'react-three-fiber'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import RainParticles from "./components/particles/rainParticles.js";
+import CameraPath from "./components/cameraPathFinding/cameraPathFinding.js";
 
 extend({ OrbitControls });
 
@@ -69,7 +70,7 @@ function App() {
 
             { rainParticleEnabled ? <Particles enabled={rainParticleEnabled}/> :
              <RainParticles enabled={rainParticleEnabled}/>}
-
+            <CameraPath/>
           </scene>
         </Canvas>
         </div>
