@@ -15,8 +15,8 @@ const useStore = create((set,get) => {
     return {
 
         data: {
-            timeInterpolation: 0,
-            position: new THREE.Vector3(),
+            t: 0,
+            position: [0,0,0],
 
             currentPath: new THREE.CubicBezierCurve(),
             currentTouchPoint: new TouchPointScene(),
@@ -27,8 +27,8 @@ const useStore = create((set,get) => {
 
             isMoving: false, 
 
-            forwardObjPos: new THREE.Vector3(),
-            backObjPos: new THREE.Vector3()
+            forwardObjPos: [0,0,0],
+            backObjPos: [0,0,0],
         },
 
         // state with actions
@@ -38,8 +38,8 @@ const useStore = create((set,get) => {
 
                 const {data} = get();
 
-                data.forwardObjPos = new THREE.Vector3()
-                data.backwardObjPos = new THREE.Vector3()
+                data.forwardObjPos = [camera.position.x, camera.position.y - 10, camera.position.z + 10];
+                data.backwardObjPos = [camera.position.x, camera.position.y - 10, camera.position.z - 10]; 
 
             },
 
@@ -101,6 +101,9 @@ const useStore = create((set,get) => {
                 else if (data.direction == "forward") {
                    data.currentLocationIndex = currentLocationIndex-1;
                 } 
+
+                data.forwardObjPos = new THREE.Vector3(camera.position.x, camera.position.y - 10, camera.position.z + 10);
+                data.backwardObjPos = new THREE.Vector3(camera.position.x, camera.position.y - 10, camera.position.z - 10); 
             }
         }
     }

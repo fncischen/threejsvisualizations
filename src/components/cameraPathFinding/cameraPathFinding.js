@@ -30,7 +30,8 @@ export default function CameraPath(props){
     var TouchPointScenes = []; // array of curves
     var buttonToClick = props.buttonToClick;
 
-    const actions = useStore(state => state.actions) // actions with methods to call 
+    const actions = useStore(state => state.actions); // actions with methods to call
+    const data = useStore(state => state.data); 
     // at different states of the event 
     
     const {
@@ -38,15 +39,13 @@ export default function CameraPath(props){
         gl: {domElement}
       } = useThree()
     
-    var timeStepRate = 0.1; // change timeStepRate; 
-
     const loader = new GLTFLoader();
 
     const {nodes} = useLoader(loader, "models/left.gltf");
-    var leftobj = nodes[0]; // data type: obj  
+    var backobj = nodes[0]; // data type: obj  
     
     const {nodes} = useLoader(loader, "models/right.gltf");
-    var rightobj = nodes[0]; // data type: obj 
+    var forwardobj = nodes[0]; // data type: obj 
 
     // set up orbit controls but modify
     // https://threejs.org/docs/index.html#examples/en/controls/OrbitControls
@@ -95,8 +94,8 @@ export default function CameraPath(props){
         <group>
         <camera ref={camera}/>
 
-        <primitive object={leftobj} onClick={onCameraMove("back")}/>
-        <primitive object={rightobj} onClick={onCameraMove("forward")}/>
+        <primitive object={backobj} position={data.backObjPos} onClick={onCameraMove("back")}/>
+        <primitive object={forwardobj} position={data.forwardObjPos} onClick={onCameraMove("forward")}/>
 
         </group>
     ) 
