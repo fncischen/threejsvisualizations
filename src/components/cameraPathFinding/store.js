@@ -1,12 +1,12 @@
 import * as THREE from 'three'
-import {useEffect} from 'react-three-fiber';
+import {useEffect} from 'react';
 import create from 'zustand';
 import TouchPointScene from "./TouchPointScene.js"
 
 // https://github.com/pmndrs/zustand
 // https://github.com/pmndrs/zustand#transient-updates-for-often-occuring-state-changes
 
-const useStore = create((set,get) => {
+const [useStore] = create((set,get) => {
 
     let camera = null 
     let timeStepRate = 0.2
@@ -71,6 +71,7 @@ const useStore = create((set,get) => {
                     data.timeStepRate *= -1;
                 }
 
+                if (camera != null) {
                 useEffect(() => {
 
                     if(camera.position != finalDestination) {
@@ -87,7 +88,7 @@ const useStore = create((set,get) => {
                     }
 
                 })
-
+                }
                 actions.stopMove();
             },
 
@@ -96,14 +97,16 @@ const useStore = create((set,get) => {
                 const { data, actions } = get()
 
                 if(data.direction == "back") {
-                    data.currentLocationIndex = currentLocationIndex+1;
+                    data.currentLocationIndex = data.currentLocationIndex+1;
                 }
                 else if (data.direction == "forward") {
-                   data.currentLocationIndex = currentLocationIndex-1;
+                   data.currentLocationIndex = data.currentLocationIndex-1;
                 } 
 
-                data.forwardObjPos = new THREE.Vector3(camera.position.x, camera.position.y - 10, camera.position.z + 10);
-                data.backwardObjPos = new THREE.Vector3(camera.position.x, camera.position.y - 10, camera.position.z - 10); 
+                if(camera != null) {
+                    data.forwardObjPos = [camera.position.x, camera.position.y - 10, camera.position.z + 10];
+                    data.backwardObjPos = [camera.position.x, camera.position.y - 10, camera.position.z - 10]; 
+                }
             }
         }
     }

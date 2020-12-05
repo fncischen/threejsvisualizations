@@ -1,12 +1,11 @@
 /// cameraPathfinding reference
 // https://threejs.org/examples/#webgl_geometry_extrude_splines
 
-import { Component, useEffect,  } from 'react';
 import * as THREE from 'three'; 
-import {useLoader, addEffect} from 'react-three-fiber';
+import {useLoader, useEffect, useThree} from 'react-three-fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { useStore } from ".store.js";
+import useStore from "./store.js";
 import TouchPointScene from './TouchPointScene';
 
 // https://github.com/pmndrs/react-postprocessing
@@ -24,11 +23,45 @@ import TouchPointScene from './TouchPointScene';
 // import blender, d3js, and 
 // http://billdwhite.com/wordpress/2015/01/12/d3-in-3d-combining-d3-js-and-three-js/
 
-export default function CameraPath(props){
+function BeizerPath({props}) {
+    var curves = props.curves; 
+    var lines = [];
+
+    console.log(curves);
+    for(var i = 0; i < curves.length; i++){
+
+        //  https://threejs.org/docs/index.html#api/en/extras/curves/CubicBezierCurve3
+        // set up subdivision and scale, understanding points
+        const points = curves[i].getPoints( 50 );
+
+        var bg = new THREE.BufferGeometry().setFromPoints(points);
+        const material = new THREE.LineBasicMaterial( { color : 'blue'} );
+
+        const curveObject = new THREE.Line( bg, material );
+
+        lines.push(curveObject);
+
+    }
+
+    console.log(lines);
+
+    return (
+        lines.map(line => {
+            return (<primitive object={line}/>)
+        })
+    )
+}
+
+
+export default function CameraPath({props}){
+    console.log(props);
+    console.log(props.controlPoints)
 
     var controlPoints = props.controlPoints;
     var TouchPointScenes = []; // array of curves
-    var buttonToClick = props.buttonToClick;
+    // var buttonToClick = props.buttonToClick;
+    var Curves = [];
+    console.log(controlPoints)
 
     const actions = useStore(state => state.actions); // actions with methods to call
     const data = useStore(state => state.data); 
@@ -39,29 +72,31 @@ export default function CameraPath(props){
         gl: {domElement}
       } = useThree()
     
-    const loader = new GLTFLoader();
+    // const loader = new GLTFLoader();
 
-    const {nodes} = useLoader(loader, "models/left.gltf");
-    var backobj = nodes[0]; // data type: obj  
+    const load1 = useLoader(GLTFLoader, "./models/backward.gltf");
+    console.log(load1);
+    var backobj = load1.nodes.Cube; // data type: obj  
     
-    const {nodes} = useLoader(loader, "models/right.gltf");
-    var forwardobj = nodes[0]; // data type: obj 
+    const load2 = useLoader(GLTFLoader, "./models/forward.gltf");
+    console.log(load2);
+    var forwardobj = load2.nodes.Cube; // data type: obj 
 
     // set up orbit controls but modify
     // https://threejs.org/docs/index.html#examples/en/controls/OrbitControls
-    var controls = new OrbitControls(); // review this data structure 
+   //  var controls = new OrbitControls(); // review this data structure 
 
     // set up a series of beizer paths based on a given array 
     var intializePaths = () => {
-        
-        var Curves = [];
-
-        // we need a cleaner way of organizing this  
-
-        for(var i = 0; i < controlPoints - 4; i+=4){
+        console.log('test')
+        console.log([3,3,3])
+        console.log(controlPoints);
+        console.log("length :" + controlPoints.length);
+        for(var i = 0; i < controlPoints.length; i+=4){
             
             var bezierCurve = new THREE.CubicBezierCurve(controlPoints[i], controlPoints[i+1], controlPoints[i+2], controlPoints[i+3]);           
-            
+            console.log('loop')
+            console.log(bezierCurve);
             Curves.push(bezierCurve);
         }
 
@@ -75,12 +110,14 @@ export default function CameraPath(props){
             TouchPointScenes.push(t);
             TouchPointScenes.push(t+1);
 
-            t1.previousTouchPoint = TouchPointScenes[i];
-            t.nextTouchPoint = TouchPointScenes[i+1]; 
+            t1.previousTouchPoint = TouchPointScenes[i-1];
+            t.nextTouchPoint = TouchPointScenes[i]; 
         }
     }
 
-    intializePaths();
+    intializePaths();    
+    console.log(Curves);
+
     actions.init(camera, TouchPointScenes);
     
     var onCameraMove = (direction) => {
@@ -92,8 +129,8 @@ export default function CameraPath(props){
         // https://github.com/pmndrs/zustand\
 
         <group>
-        <camera ref={camera}/>
 
+        <BeizerPath props={{curves: Curves}}></BeizerPath>
         <primitive object={backobj} position={data.backObjPos} onClick={onCameraMove("back")}/>
         <primitive object={forwardobj} position={data.forwardObjPos} onClick={onCameraMove("forward")}/>
 
