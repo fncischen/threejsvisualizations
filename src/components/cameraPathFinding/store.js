@@ -62,6 +62,10 @@ const [useStore] = create((set,get) => {
 
             },
 
+            testMove(direction) {
+                console.log("testing! " + direction);
+            },
+
             // call inside 
             move() {
 

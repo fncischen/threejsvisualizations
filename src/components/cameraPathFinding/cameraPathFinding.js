@@ -150,11 +150,12 @@ export default function CameraPath({props}){
         if(intersectOne.length > 1) {
             console.log("clicking on back obj!");        
             console.log(intersectOne);
-
+            actions.testMove("backwards");
         }
         else if (intersectTwo.length > 1) {
             console.log("clicking on forward obj!");
             console.log(intersectTwo);
+            actions.testMove("forwards");
 
         }
           
