@@ -2,7 +2,8 @@
 // https://threejs.org/examples/#webgl_geometry_extrude_splines
 
 import * as THREE from 'three'; 
-import {useLoader, useEffect, useThree} from 'react-three-fiber';
+import {useLoader, useThree} from 'react-three-fiber';
+import {useEffect} from 'react'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import useStore from "./store.js";
@@ -23,11 +24,13 @@ import TouchPointScene from './TouchPointScene';
 // import blender, d3js, and 
 // http://billdwhite.com/wordpress/2015/01/12/d3-in-3d-combining-d3-js-and-three-js/
 
+var mouse = new THREE.Vector2();
+
+
 function BeizerPath({props}) {
     var curves = props.curves; 
     var lines = [];
 
-    console.log(curves);
     for(var i = 0; i < curves.length; i++){
 
         //  https://threejs.org/docs/index.html#api/en/extras/curves/CubicBezierCurve3
@@ -43,8 +46,6 @@ function BeizerPath({props}) {
 
     }
 
-    console.log(lines);
-
     return (
         lines.map(line => {
             return (<primitive object={line}/>)
@@ -53,15 +54,26 @@ function BeizerPath({props}) {
 }
 
 
+function onMouseMove( event ) {
+
+	// calculate mouse position in normalized device coordinates
+    // (-1 to +1) for both components
+
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    // console.log('mouse x : '+ mouse.x + " mouse y : " + mouse.y)
+}
+
 export default function CameraPath({props}){
-    console.log(props);
-    console.log(props.controlPoints)
+    // console.log(props);
+    // console.log(props.controlPoints)
 
     var controlPoints = props.controlPoints;
     var TouchPointScenes = []; // array of curves
     // var buttonToClick = props.buttonToClick;
     var Curves = [];
-    console.log(controlPoints)
+    // console.log(controlPoints)
+    // var raycasterForCamera = useRef();
 
     const actions = useStore(state => state.actions); // actions with methods to call
     const data = useStore(state => state.data); 
@@ -69,18 +81,22 @@ export default function CameraPath({props}){
     
     const {
         camera,
-        gl: {domElement}
+        gl: {domElement},
+        raycaster
       } = useThree()
     
     // const loader = new GLTFLoader();
 
     const load1 = useLoader(GLTFLoader, "./models/backward.gltf");
-    console.log(load1);
+    // console.log(load1);
     var backobj = load1.nodes.Cube; // data type: obj  
     
     const load2 = useLoader(GLTFLoader, "./models/forward.gltf");
-    console.log(load2);
+    // console.log(load2);
     var forwardobj = load2.nodes.Cube; // data type: obj 
+
+
+
 
     // set up orbit controls but modify
     // https://threejs.org/docs/index.html#examples/en/controls/OrbitControls
@@ -88,15 +104,9 @@ export default function CameraPath({props}){
 
     // set up a series of beizer paths based on a given array 
     var intializePaths = () => {
-        console.log('test')
-        console.log([3,3,3])
-        console.log(controlPoints);
-        console.log("length :" + controlPoints.length);
         for(var i = 0; i < controlPoints.length; i+=4){
             
             var bezierCurve = new THREE.CubicBezierCurve(controlPoints[i], controlPoints[i+1], controlPoints[i+2], controlPoints[i+3]);           
-            console.log('loop')
-            console.log(bezierCurve);
             Curves.push(bezierCurve);
         }
 
@@ -116,13 +126,52 @@ export default function CameraPath({props}){
     }
 
     intializePaths();    
-    console.log(Curves);
+    // console.log(Curves);
 
     actions.init(camera, TouchPointScenes);
-    
+
+    // https://spectrum.chat/react-three-fiber/general/raycasting-e-g-onclick-noob-tips~be3da813-7cd0-45b9-a30b-7f43163b3e92
     var onCameraMove = (direction) => {
+
+        console.log('click!');
         actions.startMove(direction);
     }
+
+    window.addEventListener( 'mousemove', onMouseMove, false );
+
+    var checkRaycast = (() => {    
+        
+        raycaster.setFromCamera(mouse, camera);
+
+        const intersectOne = raycaster.intersectObject(backobj);
+        const intersectTwo = raycaster.intersectObject(forwardobj);
+
+
+        if(intersectOne.length > 1) {
+            console.log("clicking on back obj!");        
+            console.log(intersectOne);
+
+        }
+        else if (intersectTwo.length > 1) {
+            console.log("clicking on forward obj!");
+            console.log(intersectTwo);
+
+        }
+          
+        requestAnimationFrame(checkRaycast);
+
+    })
+
+    useEffect(() => {
+        // set up all the if and then statements
+        checkRaycast();
+
+
+    })
+
+
+    // set up a raycaster
+
 
     return (
         // https://codesandbox.io/embed/r3f-game-i2160
@@ -131,9 +180,8 @@ export default function CameraPath({props}){
         <group>
 
         <BeizerPath props={{curves: Curves}}></BeizerPath>
-        <primitive object={backobj} position={data.backObjPos} onClick={onCameraMove("back")}/>
-        <primitive object={forwardobj} position={data.forwardObjPos} onClick={onCameraMove("forward")}/>
-
+        <primitive object={backobj} position={data.backObjPos} />
+        <primitive object={forwardobj} position={data.forwardObjPos}/>
         </group>
     ) 
 }
