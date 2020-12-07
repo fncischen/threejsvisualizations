@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import {useEffect} from 'react';
 import {addEffect} from 'react-three-fiber';
 import create from 'zustand';
 import TouchPointScene from "./TouchPointScene.js"
@@ -9,19 +8,21 @@ import TouchPointScene from "./TouchPointScene.js"
 
 const [useStore] = create((set,get) => {
 
-    let camera = null 
-    let timeStepRate = 0.2
-    let cameraPaths = null
 
     return {
+
+        camera: null, 
+        timeStepRate: 0.2,
+        cameraPaths: null,
 
         data: {
             t: 0,
             position: [0,0,0],
 
-            currentPath: new THREE.CubicBezierCurve(),
+            currentPath: new THREE.CubicBezierCurve3(),
             currentTouchPoint: new TouchPointScene(),
             nextTouchPoint: new TouchPointScene(),
+            destinationPos: new THREE.Vector3(),
             direction: null,
 
             currentLocationIndex: 0,
@@ -34,7 +35,9 @@ const [useStore] = create((set,get) => {
 
         // state with actions
         actions: {
-            init(camera, cameraPaths) {
+            init(camera, cameraPaths, startTouchPoint) {
+                console.log("initalize actions")
+                console.log(camera);
                 set({camera, cameraPaths})
 
                 const {data} = get();
@@ -42,6 +45,8 @@ const [useStore] = create((set,get) => {
                 data.forwardObjPos = [camera.position.x, camera.position.y - 10, camera.position.z + 10];
                 data.backwardObjPos = [camera.position.x, camera.position.y - 10, camera.position.z - 10]; 
 
+                data.currentTouchPoint = startTouchPoint;
+                console.log(data.currentTouchPoint)
             },
 
             // call via onClick event handler 
@@ -53,10 +58,16 @@ const [useStore] = create((set,get) => {
                 if(data.direction == "back") {
                     data.currentPath = data.currentTouchPoint.previousPath;
                     data.nextTouchPoint = data.currentTouchPoint.previousTouchPoint;
+                    data.destinationPos = data.currentPath.v0;
+                    console.log(data.currentPath);
                 }
-                else if (data.direction == "forward") {
+                else if (data.direction == "forwards") {
                     data.currentPath = data.currentTouchPoint.nextPath;
                     data.nextTouchPoint = data.currentTouchPoint.nextTouchPoint; 
+                    data.destinationPos = data.currentPath.v3;
+                    console.log(data.currentPath);
+                    console.log(data.destinationPos);
+
                 }
 
                 actions.move();
@@ -96,21 +107,32 @@ const [useStore] = create((set,get) => {
             // call inside 
             move() {
 
-                const {data, actions} = get()                    
+                const {data, actions, camera, timeStepRate} = get()                    
                 
                 if(data.direction == "back") {
                     data.timeStepRate *= -1;
                 }
 
-                if (camera != null) {
-                useEffect(() => {
+                // console.log('begin moving!');
+                console.log(data.destinationPos);
+                var point; 
 
-                    if(camera.position != finalDestination) {
+                // set up async function 
 
+                addEffect(() => {
+                    // console.log('move move move!');
+
+                    if(point != data.destinationPos || data.t < 1.0) {
                         // set up interpolation for this 
                         data.t += timeStepRate; // use a different lerping function to loop this path 
                         // https://threejs.org/docs/#api/en/extras/core/Curve
-                        camera.current.position = data.currentPathPath.getPointAt(t);
+                        // console.log(data.t);
+                        // // fix add ref       
+                        // console.log(camera);                     
+                        // can't do it this way since camera is not a useRef 
+                        // camera.current.position = data.currentPath.getPointAt(data.t);
+                        point = data.currentPath.getPoint(data.t);
+                        console.log(point);
                     
                     }
                     else {
@@ -119,13 +141,12 @@ const [useStore] = create((set,get) => {
                     }
 
                 })
-                }
                 actions.stopMove();
             },
 
             stopMove() {
 
-                const { data, actions } = get()
+                const { data, actions,camera } = get()
 
                 if(data.direction == "back") {
                     data.currentLocationIndex = data.currentLocationIndex+1;
@@ -134,10 +155,9 @@ const [useStore] = create((set,get) => {
                    data.currentLocationIndex = data.currentLocationIndex-1;
                 } 
 
-                if(camera != null) {
                     data.forwardObjPos = [camera.position.x, camera.position.y - 10, camera.position.z + 10];
                     data.backwardObjPos = [camera.position.x, camera.position.y - 10, camera.position.z - 10]; 
-                }
+                
             }
         }
     }

@@ -1,5 +1,5 @@
 export default class TouchPointScene{
-    construtor(index, previousPath, nextPath) {
+    constructor(index, previousPath, nextPath) {
         this.index = index;
         this.previousPath = previousPath;
         this.nextPath = nextPath; 
@@ -11,6 +11,14 @@ export default class TouchPointScene{
         this.bufferGeometryNextPath = null; // dont require it, make it optional 
 
         this.bufferGeometryActive = false; 
+    }
+
+    setPreviousTouchPoint(prevTouchPoint) {
+        this.previousTouchPoint = prevTouchPoint;
+    }
+
+    setNextTouchPoint(nextTouchPoint) {
+        this.nextTouchPoint = nextTouchPoint;
     }
 
     // optional beizer path generated via geometry 

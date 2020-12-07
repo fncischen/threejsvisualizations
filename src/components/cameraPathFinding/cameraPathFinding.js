@@ -89,6 +89,7 @@ export default function CameraPath({props}){
 
     const load1 = useLoader(GLTFLoader, "./models/backward.gltf");
     // console.log(load1);
+    // var backobj; 
     var backobj = load1.nodes.Cube; // data type: obj  
     
     const load2 = useLoader(GLTFLoader, "./models/forward.gltf");
@@ -106,29 +107,37 @@ export default function CameraPath({props}){
     var intializePaths = () => {
         for(var i = 0; i < controlPoints.length; i+=4){
             
-            var bezierCurve = new THREE.CubicBezierCurve(controlPoints[i], controlPoints[i+1], controlPoints[i+2], controlPoints[i+3]);           
+            var bezierCurve = new THREE.CubicBezierCurve3(controlPoints[i], controlPoints[i+1], controlPoints[i+2], controlPoints[i+3]);           
             Curves.push(bezierCurve);
         }
 
         let touchPointSceneLength = Curves.length + 1; 
 
-        for(var i = 1; i < touchPointSceneLength-1; i+=2) {
-
-            var t = new TouchPointScene({index: i-1, previousPath: Curves[i-1], nextPath: Curves[i]});
-            var t1 = new TouchPointScene({index: i, previousPath: Curves[i], nextPath: Curves[i+1]});
+        for(var i = 0; i < touchPointSceneLength; i+=2) {
+            console.log('run');
+            var t = new TouchPointScene(i, null, Curves[i]);
+            var t1 = new TouchPointScene(i+1, Curves[i], null);
 
             TouchPointScenes.push(t);
-            TouchPointScenes.push(t+1);
+            TouchPointScenes.push(t1);
 
-            t1.previousTouchPoint = TouchPointScenes[i-1];
-            t.nextTouchPoint = TouchPointScenes[i]; 
-        }
+            if(TouchPointScenes[i-1] != null ){
+                t.previousPath = Curves[i-1];
+                TouchPointScenes[i-1].nextPath = Curves[i-1];
+            }
+
+            t1.setPreviousTouchPoint(TouchPointScenes[i]);
+            t.setNextTouchPoint(TouchPointScenes[i+1]);
+            
+          }
+        console.log(TouchPointScenes)
     }
 
     intializePaths();    
-    // console.log(Curves);
+    console.log(TouchPointScenes);
+    console.log(Curves);
 
-    actions.init(camera, TouchPointScenes);
+    actions.init(camera, TouchPointScenes, TouchPointScenes[0]);
 
     // https://spectrum.chat/react-three-fiber/general/raycasting-e-g-onclick-noob-tips~be3da813-7cd0-45b9-a30b-7f43163b3e92
     var onCameraMove = (direction) => {
@@ -147,15 +156,15 @@ export default function CameraPath({props}){
         const intersectTwo = raycaster.intersectObject(forwardobj);
 
 
-        if(intersectOne.length > 1) {
-            console.log("clicking on back obj!");        
-            console.log(intersectOne);
-            actions.testMoveTwo("backwards");
-        }
-        else if (intersectTwo.length > 1) {
+        // if(intersectOne.length > 1) {
+        //     console.log("clicking on back obj!");        
+        //     // console.log(intersectOne);
+        //     // actions.startMove("backwards");
+        // }
+        if (intersectTwo.length > 1) {
             console.log("clicking on forward obj!");
-            console.log(intersectTwo);
-            actions.testMoveTwo("forwards");
+            // console.log(intersectTwo);
+            actions.startMove("forwards");
 
         }
           
