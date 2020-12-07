@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import {useEffect} from 'react';
+import {addEffect} from 'react-three-fiber';
 import create from 'zustand';
 import TouchPointScene from "./TouchPointScene.js"
 
@@ -64,6 +65,32 @@ const [useStore] = create((set,get) => {
 
             testMove(direction) {
                 console.log("testing! " + direction);
+            },
+
+            testMoveTwo(direction) {
+                console.log("testing! " + direction);
+
+                // setTimeout(function(){ console.log("2 seconds") }, 2000);
+                // setTimeout(function(){ console.log("4 seconds")}, 4000);
+                // setTimeout(function(){ console.log("6 seconds") }, 6000);
+                var t = 0; 
+
+                // use addeffect // 
+                // https://developer.aliyun.com/mirror/npm/package/react-three-fiber-cambrian
+                addEffect(() => {
+
+                    if(t != 50000) {
+                        t += 100;
+                        console.log("time at : " + t );
+                    }
+                    else {
+                        return;
+                    }
+
+
+                })
+
+                console.log("we're done")
             },
 
             // call inside 
