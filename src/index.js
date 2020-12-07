@@ -1,9 +1,11 @@
 import ReactDOM from 'react-dom'
-import React, { useCallback, useEffect, useRef, useMemo , useState} from 'react'
+import * as THREE from 'three'
+import React, { useCallback, useEffect, useRef, useMemo , useState, Suspense} from 'react'
 import Particles from "./components/particles/particles.js"
 import { Canvas, useFrame, useThree, extend} from 'react-three-fiber'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import RainParticles from "./components/particles/rainParticles.js";
+import CameraPath from "./components/cameraPathFinding/cameraPathFinding.js";
 
 extend({ OrbitControls });
 
@@ -67,9 +69,11 @@ function App() {
             <CameraControls/>
             <scene name="Scene">
 
-            { rainParticleEnabled ? <Particles enabled={rainParticleEnabled}/> :
-             <RainParticles enabled={rainParticleEnabled}/>}
-
+            {/* { rainParticleEnabled ? <Particles enabled={rainParticleEnabled}/> :
+             <RainParticles enabled={rainParticleEnabled}/>} */}
+             <Suspense fallback={null}>
+            {/* <CameraPath props={{controlPoints: [new THREE.Vector3(0,0,3),new THREE.Vector3(1,3,4), new THREE.Vector3(9,9,7), new THREE.Vector3(1,4,4)]}} /> */}
+            </Suspense>
           </scene>
         </Canvas>
         </div>
