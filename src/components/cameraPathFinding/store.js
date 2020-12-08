@@ -6,13 +6,17 @@ import TouchPointScene from "./TouchPointScene.js"
 // https://github.com/pmndrs/zustand
 // https://github.com/pmndrs/zustand#transient-updates-for-often-occuring-state-changes
 
+// https://engineering.icf.com/getting-started-with-a-3d-react-workflow/
+// use the state system above
+
+
 const [useStore] = create((set,get) => {
 
 
     return {
 
         camera: null, 
-        timeStepRate: 0.2,
+        timeStepRate: 0.01,
         cameraPaths: null,
 
         data: {
@@ -30,7 +34,10 @@ const [useStore] = create((set,get) => {
             isMoving: false, 
 
             forwardObjPos: [0,0,0],
-            backObjPos: [0,0,0],
+            backObjPos: [0,0,0],        
+            
+            isCameraMoving: false, 
+
         },
 
         // state with actions
@@ -52,7 +59,7 @@ const [useStore] = create((set,get) => {
             // call via onClick event handler 
             startMove(direction) {
 
-                const {data,actions} = get();
+                const {data,actions, isCameraMoving} = get();
                 data.direction = direction; 
 
                 if(data.direction == "back") {
@@ -65,12 +72,14 @@ const [useStore] = create((set,get) => {
                     data.currentPath = data.currentTouchPoint.nextPath;
                     data.nextTouchPoint = data.currentTouchPoint.nextTouchPoint; 
                     data.destinationPos = data.currentPath.v3;
-                    console.log(data.currentPath);
-                    console.log(data.destinationPos);
+                    // console.log(data.currentPath);
+                    // console.log(data.destinationPos);
 
                 }
 
-                actions.move();
+                data.isCameraMoving = true; 
+
+               //  actions.move();
 
             },
 
@@ -101,6 +110,9 @@ const [useStore] = create((set,get) => {
 
                 })
 
+                if(data.direction == "back") {
+                    data.timeStepRate *= -1;
+                }
                 console.log("we're done")
             },
 
@@ -108,40 +120,29 @@ const [useStore] = create((set,get) => {
             move() {
 
                 const {data, actions, camera, timeStepRate} = get()                    
-                
-                if(data.direction == "back") {
-                    data.timeStepRate *= -1;
-                }
 
-                // console.log('begin moving!');
-                console.log(data.destinationPos);
-                var point; 
-
-                // set up async function 
-
-                addEffect(() => {
-                    // console.log('move move move!');
-
-                    if(point != data.destinationPos || data.t < 1.0) {
+                if(data.t < 1.0) {
                         // set up interpolation for this 
                         data.t += timeStepRate; // use a different lerping function to loop this path 
                         // https://threejs.org/docs/#api/en/extras/core/Curve
-                        // console.log(data.t);
+                        console.log(data.t);
                         // // fix add ref       
                         // console.log(camera);                     
                         // can't do it this way since camera is not a useRef 
                         // camera.current.position = data.currentPath.getPointAt(data.t);
-                        point = data.currentPath.getPoint(data.t);
-                        console.log(point);
+                        // point = data.currentPath.getPoint(data.t);
+                        // console.log(point);
                     
-                    }
-                    else {
-                        data.t = 0; 
-                        return; // test out 
-                    }
+                }
+                else {
+                    data.t = 0;
+                    data.isCameraMoving = false; 
+                    actions.stopMoveTest();
+                }
+            },
 
-                })
-                actions.stopMove();
+            stopMoveTest() {
+                console.log('stopped move');
             },
 
             stopMove() {

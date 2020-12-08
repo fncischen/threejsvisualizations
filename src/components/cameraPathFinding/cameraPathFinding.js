@@ -2,7 +2,7 @@
 // https://threejs.org/examples/#webgl_geometry_extrude_splines
 
 import * as THREE from 'three'; 
-import {useLoader, useThree} from 'react-three-fiber';
+import {useLoader, useThree, useFrame} from 'react-three-fiber';
 import {useEffect} from 'react'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -172,10 +172,16 @@ export default function CameraPath({props}){
 
     })
 
-    useEffect(() => {
+    // you can check and see if the camera is in moving state (i.e.)
+
+    useFrame(() => {
         // set up all the if and then statements
         checkRaycast();
 
+        if(data.isCameraMoving) {
+            console.log("use effect move move ")
+            actions.move();
+        }
 
     })
 
