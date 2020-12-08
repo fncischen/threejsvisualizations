@@ -181,6 +181,9 @@ export default function CameraPath({props}){
         if(data.isCameraMoving) {
             console.log("use effect move move ")
             actions.move();
+            camera.position.x = data.position.x;
+            camera.position.y = data.position.y;
+            camera.position.z = data.position.z;
         }
 
     })

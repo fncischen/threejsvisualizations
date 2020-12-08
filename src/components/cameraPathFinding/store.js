@@ -16,7 +16,7 @@ const [useStore] = create((set,get) => {
     return {
 
         camera: null, 
-        timeStepRate: 0.01,
+        timeStepRate: 0.001,
         cameraPaths: null,
 
         data: {
@@ -129,7 +129,7 @@ const [useStore] = create((set,get) => {
                         // // fix add ref       
                         // console.log(camera);                     
                         // can't do it this way since camera is not a useRef 
-                        // camera.current.position = data.currentPath.getPointAt(data.t);
+                        data.position = data.currentPath.getPointAt(data.t);
                         // point = data.currentPath.getPoint(data.t);
                         // console.log(point);
                     
