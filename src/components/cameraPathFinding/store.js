@@ -16,7 +16,7 @@ const [useStore] = create((set,get) => {
     return {
 
         camera: null, 
-        timeStepRate: 0.001,
+        timeStepRate: 0.005,
         cameraPaths: null,
 
         data: {
@@ -26,7 +26,7 @@ const [useStore] = create((set,get) => {
             normal: new THREE.Vector3(),
             binormal: new THREE.Vector3(),
             scale: 1, 
-            fov: 200,
+            fov: 120,
 
             // https://threejs.org/docs/#api/en/geometries/TubeBufferGeometry
             
@@ -132,17 +132,17 @@ const [useStore] = create((set,get) => {
 
                 const {data, actions, camera, timeStepRate} = get()                    
 
-                if(data.t < 1.0) {
+                if(data.t < 0.95) {
                         // set up interpolation for this 
-                        data.t += timeStepRate; // use a different lerping function to loop this path 
+                         // use a different lerping function to loop this path 
                         // https://threejs.org/docs/#api/en/extras/core/Curve
                         console.log(data.t);
-
+                        
                         data.position = data.currentPath.getPointAt(data.t);
-
+                        // data.position.addVector(data.position, new THREE.Vector3(0,25,0));
                         // interpolate quanterion 
                         data.rotation; 
-
+                        data.t += timeStepRate;
                         // point = data.currentPath.getPoint(data.t);
                         // console.log(point);
                     

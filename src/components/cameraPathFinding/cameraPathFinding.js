@@ -31,6 +31,7 @@ var mouse = new THREE.Vector2();
 function BeizerPath({props}) {
     var curves = props.curves; 
     var lines = [];
+    var tubeGeometries = [];
     console.log(curves);
     for(var i = 0; i < curves.length; i++){
 
@@ -42,6 +43,7 @@ function BeizerPath({props}) {
         const material = new THREE.LineBasicMaterial( { color : 'blue'} );
 
         const curveObject = new THREE.Line( bg, material );
+        tubeGeometries.push(curves[i].tub)
 
         lines.push(curveObject);
 
@@ -185,6 +187,18 @@ export default function CameraPath({props}){
             console.log("use effect move move ")
             actions.move();
 
+            // cameraLookAtFunction(); // uncomment  
+
+            camera.position.x = data.position.x;
+            camera.position.y = data.position.y;
+            camera.position.z = data.position.z;
+
+            // set up rotation
+        }
+
+    })
+
+    const cameraLookAtFunction = (() => {
             // https://codesandbox.io/embed/r3f-game-i2160
             // reference to camera rig component 
             const track = data.currentTrack;
@@ -196,6 +210,13 @@ export default function CameraPath({props}){
             const pick = Math.floor(pickt) // each segment is like a cell 
             const pickNext = (pick + 1) % segments // next segment to go to 
 
+            // console.log("binromals pick : " + pick)
+            // console.log(track.binormals[pick]);
+            console.log("binromals picknext : " + pickNext)
+            // console.log(track.binormals[pickNext]);
+
+
+
             // store data regarding normals and binormals in data storage for class usage
             data.binormal.subVectors(track.binormals[pickNext], track.binormals[pick])
             data.binormal.multiplyScalar(pickt - pick).add(track.binormals[pick])
@@ -206,36 +227,17 @@ export default function CameraPath({props}){
             data.normal.copy(data.binormal).cross(dir)
 
             pos.add(data.normal.clone().multiplyScalar(offset))
+            console.log('camera positions');
+            console.log(pos);
+            
             camera.position.copy(pos)
-            console.log(camera.position);
+            // console.log(camera.position);
             const lookAt = track.parameters.path.getPointAt((t + 30 / track.parameters.path.getLength()) % 1).multiplyScalar(data.scale)
             camera.matrix.lookAt(camera.position, lookAt, data.normal)
             camera.quaternion.setFromRotationMatrix(camera.matrix)
-            camera.fov += ((t > 0.4 && t < 0.45 ? 120 : data.fov) - camera.fov) * 0.05
+            // camera.fov += ((t > 0.4 && t < 0.45 ? 120 : data.fov) - camera.fov) * 0.05
             camera.updateProjectionMatrix()
-
-            // get data regarding the beizer path track (normals, binormals)
-
-            // we use the cross product of the binormals to retrieve our normals
-            // which gives us our lookup position 
-
-            // obtain lookAt vector that is sent to the quaternion 
-
-
-            // field of view changes on time 
-
-            // camera.position.x = data.position.x;
-            // camera.position.y = data.position.y;
-            // camera.position.z = data.position.z;
-
-            // set up rotation
-        }
-
     })
-
-
-    // set up a raycaster
-
 
     return (
         // https://codesandbox.io/embed/r3f-game-i2160
