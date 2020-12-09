@@ -72,7 +72,7 @@ function App() {
             {/* { rainParticleEnabled ? <Particles enabled={rainParticleEnabled}/> :
              <RainParticles enabled={rainParticleEnabled}/>} */}
              <Suspense fallback={null}>
-            <CameraPath props={{controlPoints: [new THREE.Vector3(0,0,3),new THREE.Vector3(100,100,100), new THREE.Vector3(50,23,50), new THREE.Vector3(1,4,4)]}} />
+            <CameraPath props={{controlPoints: [new THREE.Vector3(0,0,3),new THREE.Vector3(35,75,-15), new THREE.Vector3(50,23,50), new THREE.Vector3(1,4,4)]}} />
             </Suspense>
           </scene>
         </Canvas>

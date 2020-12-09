@@ -22,7 +22,15 @@ const [useStore] = create((set,get) => {
         data: {
             t: 0,
             position: [0,0,0],
+            rotation: new THREE.Quaternion(),
+            normal: new THREE.Vector3(),
+            binormal: new THREE.Vector3(),
+            scale: 1, 
+            fov: 200,
 
+            // https://threejs.org/docs/#api/en/geometries/TubeBufferGeometry
+            
+            currentTrack: null, 
             currentPath: new THREE.CubicBezierCurve3(),
             currentTouchPoint: new TouchPointScene(),
             nextTouchPoint: new TouchPointScene(),
@@ -53,6 +61,7 @@ const [useStore] = create((set,get) => {
                 data.backwardObjPos = [camera.position.x, camera.position.y - 10, camera.position.z - 10]; 
 
                 data.currentTouchPoint = startTouchPoint;
+
                 console.log(data.currentTouchPoint)
             },
 
@@ -63,15 +72,17 @@ const [useStore] = create((set,get) => {
                 data.direction = direction; 
 
                 if(data.direction == "back") {
-                    data.currentPath = data.currentTouchPoint.previousPath;
+                    data.currentPath = data.currentTouchPoint.previousPath.curve;
                     data.nextTouchPoint = data.currentTouchPoint.previousTouchPoint;
                     data.destinationPos = data.currentPath.v0;
-                    console.log(data.currentPath);
+                    data.currentTrack = data.currentTouchPoint.previousPath.tubeBufferGeometryPath;
+                    // console.log(data.currentPath);
                 }
                 else if (data.direction == "forwards") {
-                    data.currentPath = data.currentTouchPoint.nextPath;
+                    data.currentPath = data.currentTouchPoint.nextPath.curve;
                     data.nextTouchPoint = data.currentTouchPoint.nextTouchPoint; 
                     data.destinationPos = data.currentPath.v3;
+                    data.currentTrack = data.currentTouchPoint.nextPath.tubeBufferGeometryPath;
                     // console.log(data.currentPath);
                     // console.log(data.destinationPos);
 
@@ -126,10 +137,12 @@ const [useStore] = create((set,get) => {
                         data.t += timeStepRate; // use a different lerping function to loop this path 
                         // https://threejs.org/docs/#api/en/extras/core/Curve
                         console.log(data.t);
-                        // // fix add ref       
-                        // console.log(camera);                     
-                        // can't do it this way since camera is not a useRef 
+
                         data.position = data.currentPath.getPointAt(data.t);
+
+                        // interpolate quanterion 
+                        data.rotation; 
+
                         // point = data.currentPath.getPoint(data.t);
                         // console.log(point);
                     

@@ -8,6 +8,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import useStore from "./store.js";
 import TouchPointScene from './TouchPointScene';
+import TouchPointPath from "./touchPointPath";
 
 // https://github.com/pmndrs/react-postprocessing
 
@@ -30,12 +31,12 @@ var mouse = new THREE.Vector2();
 function BeizerPath({props}) {
     var curves = props.curves; 
     var lines = [];
-
+    console.log(curves);
     for(var i = 0; i < curves.length; i++){
 
         //  https://threejs.org/docs/index.html#api/en/extras/curves/CubicBezierCurve3
         // set up subdivision and scale, understanding points
-        const points = curves[i].getPoints( 50 );
+        const points = curves[i].curve.getPoints( 50 );
 
         var bg = new THREE.BufferGeometry().setFromPoints(points);
         const material = new THREE.LineBasicMaterial( { color : 'blue'} );
@@ -108,7 +109,8 @@ export default function CameraPath({props}){
         for(var i = 0; i < controlPoints.length; i+=4){
             
             var bezierCurve = new THREE.CubicBezierCurve3(controlPoints[i], controlPoints[i+1], controlPoints[i+2], controlPoints[i+3]);           
-            Curves.push(bezierCurve);
+            var touchPointPath = new TouchPointPath(bezierCurve);
+            Curves.push(touchPointPath);
         }
 
         let touchPointSceneLength = Curves.length + 1; 
@@ -174,6 +176,7 @@ export default function CameraPath({props}){
 
     // you can check and see if the camera is in moving state (i.e.)
 
+    let offset = 0
     useFrame(() => {
         // set up all the if and then statements
         checkRaycast();
@@ -181,9 +184,51 @@ export default function CameraPath({props}){
         if(data.isCameraMoving) {
             console.log("use effect move move ")
             actions.move();
-            camera.position.x = data.position.x;
-            camera.position.y = data.position.y;
-            camera.position.z = data.position.z;
+
+            // https://codesandbox.io/embed/r3f-game-i2160
+            // reference to camera rig component 
+            const track = data.currentTrack;
+            const t = data.t; 
+            const pos = data.position;    
+            
+            const segments = track.tangents.length
+            const pickt = t * segments // how many segments have we passed as a function of time 
+            const pick = Math.floor(pickt) // each segment is like a cell 
+            const pickNext = (pick + 1) % segments // next segment to go to 
+
+            // store data regarding normals and binormals in data storage for class usage
+            data.binormal.subVectors(track.binormals[pickNext], track.binormals[pick])
+            data.binormal.multiplyScalar(pickt - pick).add(track.binormals[pick])
+
+            // get the direction and offset, and use that to 
+            const dir = track.parameters.path.getTangentAt(t)
+            offset += (Math.max(15, 15 + -mouse.y / 20) - offset) * 0.05
+            data.normal.copy(data.binormal).cross(dir)
+
+            pos.add(data.normal.clone().multiplyScalar(offset))
+            camera.position.copy(pos)
+            console.log(camera.position);
+            const lookAt = track.parameters.path.getPointAt((t + 30 / track.parameters.path.getLength()) % 1).multiplyScalar(data.scale)
+            camera.matrix.lookAt(camera.position, lookAt, data.normal)
+            camera.quaternion.setFromRotationMatrix(camera.matrix)
+            camera.fov += ((t > 0.4 && t < 0.45 ? 120 : data.fov) - camera.fov) * 0.05
+            camera.updateProjectionMatrix()
+
+            // get data regarding the beizer path track (normals, binormals)
+
+            // we use the cross product of the binormals to retrieve our normals
+            // which gives us our lookup position 
+
+            // obtain lookAt vector that is sent to the quaternion 
+
+
+            // field of view changes on time 
+
+            // camera.position.x = data.position.x;
+            // camera.position.y = data.position.y;
+            // camera.position.z = data.position.z;
+
+            // set up rotation
         }
 
     })
