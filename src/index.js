@@ -6,6 +6,9 @@ import { Canvas, useFrame, useThree, extend} from 'react-three-fiber'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import RainParticles from "./components/particles/rainParticles.js";
 import CameraPath from "./components/cameraPathFinding/cameraPathFinding.js";
+import './styles.css';
+import useYScroll from "./components/cameraPathFinding/onScroll.js";
+import {a as aDom} from "@react-spring/web";
 
 extend({ OrbitControls });
 
@@ -26,7 +29,7 @@ const CameraControls = (() => {
   camera.position.x = 0;
   camera.position.y = 0;
   camera.position.z = 120;
-  camera.fov = 40;
+  camera.fov = 80;
   camera.near = 0.1;
   camera.far = 10000;
 
@@ -39,6 +42,12 @@ const CameraControls = (() => {
 
 function App() {
     const [rainParticleEnabled, onRainParticleEnabled] = useState(false);
+
+    const lowerBound = -100;
+    const highBound = 2400; 
+
+    const [y] = useYScroll([lowerBound, highBound], { domTarget: window })
+
 
     // https://dev.to/alexkhismatulin/update-boolean-state-right-with-react-hooks-3k2i
   
@@ -65,17 +74,18 @@ function App() {
     return (
       <div className="App">
         {/* <button onClick={onSwitchToRainParticles}>Switch to Particle Stream</button> */}
-        <Canvas style={{height: 750, color: "FF0000"}}>
+        <Canvas style={{height: 500, color: "FF0000"}}>
             <CameraControls/>
             <scene name="Scene">
 
             {/* { rainParticleEnabled ? <Particles enabled={rainParticleEnabled}/> :
              <RainParticles enabled={rainParticleEnabled}/>} */}
              <Suspense fallback={null}>
-            {/* <CameraPath props={{controlPoints: [new THREE.Vector3(0,0,-3),new THREE.Vector3(50,0,-250), new THREE.Vector3(100,0,-500), new THREE.Vector3(-100,0,-500)]}} /> */}
+            <CameraPath props={{controlPoints: [new THREE.Vector3(0,50,-500),new THREE.Vector3(50,0,-250), new THREE.Vector3(100,0,-500), new THREE.Vector3(-500,0,-500)], currentLocation: y}} />
             </Suspense>
           </scene>
         </Canvas>
+        <aDom.div className="bar" style={{ height: y.interpolate([-100, 2400], ['0%', '100%']) }} />
         </div>
     )
   }
