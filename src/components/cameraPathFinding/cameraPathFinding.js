@@ -9,6 +9,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import useStore from "./store.js";
 import TouchPointScene from './TouchPointScene';
 import TouchPointPath from "./touchPointPath";
+import useYScroll from "./onScroll.js";
+import {a as aDom} from "@react-spring/web";
 
 // https://github.com/pmndrs/react-postprocessing
 
@@ -72,6 +74,7 @@ export default function CameraPath({props}){
     // console.log(props.controlPoints)
 
     var controlPoints = props.controlPoints;
+    var currentLocation = props.currentLocation; 
     var TouchPointScenes = []; // array of curves
     // var buttonToClick = props.buttonToClick;
     var Curves = [];
@@ -82,6 +85,7 @@ export default function CameraPath({props}){
     const data = useStore(state => state.data); 
     // at different states of the event 
     
+
     const {
         camera,
         gl: {domElement},
@@ -99,7 +103,17 @@ export default function CameraPath({props}){
     // console.log(load2);
     var forwardobj = load2.nodes.Cube; // data type: obj 
 
+    const lowerBound = -100;
+    const highBound = 2400; 
 
+    const [y] = useYScroll([lowerBound, highBound], { domTarget: window })
+    // what if we use the scroll as a lerp ratio between camera pos 1 and camera pos 2
+
+    // we don't need the move function anymore
+    const interpolateY = ((y) => {
+        let t = y / (highBound - lowerBound);
+        return t; 
+    })
 
 
     // set up orbit controls but modify
@@ -141,7 +155,8 @@ export default function CameraPath({props}){
     console.log(TouchPointScenes);
     console.log(Curves);
 
-    actions.init(camera, TouchPointScenes, TouchPointScenes[0]);
+    // actions.init(camera, TouchPointScenes, TouchPointScenes[0]);
+    actions.initTwo(camera,TouchPointScenes);
 
     // https://spectrum.chat/react-three-fiber/general/raycasting-e-g-onclick-noob-tips~be3da813-7cd0-45b9-a30b-7f43163b3e92
     var onCameraMove = (direction) => {
@@ -178,25 +193,47 @@ export default function CameraPath({props}){
 
     // you can check and see if the camera is in moving state (i.e.)
 
-    let offset = 0
+    let offset = 0        
+    
+    console.log(y);
+    
+
     useFrame(() => {
+        // console.log(currentLocation);
+
+        var t = interpolateY(y.get());
+        // console.log(t);
+        actions.moveInterpolation(t);
+        // console.log(y);
+        // console.log(y.value);
         // set up all the if and then statements
-        checkRaycast();
+        // checkRaycast();
 
-        if(data.isCameraMoving) {
-            console.log("use effect move move ")
-            actions.move();
+        // if(data.isCameraMoving) {
+        //     console.log("use effect move move ")
+        //     actions.move();
 
-            // cameraLookAtFunction(); // uncomment  
+        //     // cameraLookAtFunction(); // uncomment  
 
-            camera.position.x = data.position.x;
-            camera.position.y = data.position.y;
-            camera.position.z = data.position.z;
+        //     camera.position.x = data.position.x;
+        //     camera.position.y = data.position.y;
+        //     camera.position.z = data.position.z;
 
-            // set up rotation
-        }
+        //     // set up rotation
+        // }
+        // let t = interpolateY(y);
+        // actions.moveInterpolation(t);
+
+        camera.position.x = data.position.x;
+        camera.position.y = data.position.y + 25;
+        camera.position.z = data.position.z;
+
+        // console.log(camera.position);
 
     })
+
+    // frame loop https://github.com/pmndrs/react-three-fiber/issues/133
+
 
     const cameraLookAtFunction = (() => {
             // https://codesandbox.io/embed/r3f-game-i2160
@@ -239,15 +276,18 @@ export default function CameraPath({props}){
             camera.updateProjectionMatrix()
     })
 
+
+
     return (
         // https://codesandbox.io/embed/r3f-game-i2160
         // https://github.com/pmndrs/zustand\
+        // use the style here 
 
         <group>
-
+        
         <BeizerPath props={{curves: Curves}}></BeizerPath>
-        <primitive object={backobj} position={data.backObjPos} />
-        <primitive object={forwardobj} position={data.forwardObjPos}/>
+        {/* <primitive object={backobj} position={data.backObjPos} />
+        <primitive object={forwardobj} position={data.forwardObjPos}/> */}
         </group>
     ) 
 }

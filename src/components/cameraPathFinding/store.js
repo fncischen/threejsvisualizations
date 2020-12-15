@@ -65,6 +65,14 @@ const [useStore] = create((set,get) => {
                 console.log(data.currentTouchPoint)
             },
 
+            initTwo(camera, cameraPaths) {
+                set({camera, cameraPaths})
+                const {data} = get();
+
+                data.currentPath = cameraPaths[0].nextPath.curve; 
+
+            },
+
             // call via onClick event handler 
             startMove(direction) {
 
@@ -152,6 +160,13 @@ const [useStore] = create((set,get) => {
                     data.isCameraMoving = false; 
                     actions.stopMoveTest();
                 }
+            },
+
+            moveInterpolation(t) {
+                const {data} = get();
+                data.t = t; 
+                data.position = data.currentPath.getPointAt(data.t);
+                console.log(data.position);
             },
 
             stopMoveTest() {
