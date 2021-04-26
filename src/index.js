@@ -9,7 +9,7 @@ import CameraPath from "./components/cameraPathFinding/cameraPathFinding.js";
 import './styles.css';
 import useYScroll from "./components/cameraPathFinding/onScroll.js";
 import {a as aDom} from "@react-spring/web";
-
+ 
 extend({ OrbitControls });
 
 
@@ -78,14 +78,14 @@ function App() {
             <CameraControls/>
             <scene name="Scene">
 
-            {/* { rainParticleEnabled ? <Particles enabled={rainParticleEnabled}/> :
-             <RainParticles enabled={rainParticleEnabled}/>} */}
+            { rainParticleEnabled ? <Particles enabled={rainParticleEnabled}/> :
+             <RainParticles enabled={rainParticleEnabled}/>}
              <Suspense fallback={null}>
-            <CameraPath props={{controlPoints: [new THREE.Vector3(0,50,-500),new THREE.Vector3(50,0,-250), new THREE.Vector3(100,0,-500), new THREE.Vector3(-500,0,-500)], currentLocation: y}} />
+            {/* <CameraPath props={{controlPoints: [new THREE.Vector3(0,0,-3),new THREE.Vector3(0,0,-250), new THREE.Vector3(100,0,-500), new THREE.Vector3(-500,0,-500)], currentLocation: y}} /> */}
             </Suspense>
           </scene>
         </Canvas>
-        <aDom.div className="bar" style={{ height: y.interpolate([-100, 2400], ['0%', '100%']) }} />
+        {/* <aDom.div className="bar" style={{ height: y.interpolate([-100, 2400], ['0%', '100%']) }} /> */}
         </div>
     )
   }

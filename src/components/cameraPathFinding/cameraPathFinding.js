@@ -174,12 +174,6 @@ export default function CameraPath({props}){
         const intersectOne = raycaster.intersectObject(backobj);
         const intersectTwo = raycaster.intersectObject(forwardobj);
 
-
-        // if(intersectOne.length > 1) {
-        //     console.log("clicking on back obj!");        
-        //     // console.log(intersectOne);
-        //     // actions.startMove("backwards");
-        // }
         if (intersectTwo.length > 1) {
             console.log("clicking on forward obj!");
             // console.log(intersectTwo);
@@ -199,36 +193,14 @@ export default function CameraPath({props}){
     
 
     useFrame(() => {
-        // console.log(currentLocation);
 
         var t = interpolateY(y.get());
-        // console.log(t);
         actions.moveInterpolation(t);
-        // console.log(y);
-        // console.log(y.value);
-        // set up all the if and then statements
-        // checkRaycast();
-
-        // if(data.isCameraMoving) {
-        //     console.log("use effect move move ")
-        //     actions.move();
-
-        //     // cameraLookAtFunction(); // uncomment  
-
-        //     camera.position.x = data.position.x;
-        //     camera.position.y = data.position.y;
-        //     camera.position.z = data.position.z;
-
-        //     // set up rotation
-        // }
-        // let t = interpolateY(y);
-        // actions.moveInterpolation(t);
 
         camera.position.x = data.position.x;
         camera.position.y = data.position.y + 25;
         camera.position.z = data.position.z;
 
-        // console.log(camera.position);
 
     })
 

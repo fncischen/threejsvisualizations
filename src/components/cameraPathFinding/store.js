@@ -109,9 +109,6 @@ const [useStore] = create((set,get) => {
             testMoveTwo(direction) {
                 console.log("testing! " + direction);
 
-                // setTimeout(function(){ console.log("2 seconds") }, 2000);
-                // setTimeout(function(){ console.log("4 seconds")}, 4000);
-                // setTimeout(function(){ console.log("6 seconds") }, 6000);
                 var t = 0; 
 
                 // use addeffect // 
