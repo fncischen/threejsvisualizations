@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/styles.css"],"names":[],"mappings":"AAAA,KACI,iBAAkB,CAClB,KAAM,CACN,MAAO,CACP,SAAU,CACV,kBACF","file":"main.2ebbd35f.chunk.css","sourcesContent":[".bar {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 4px;\r\n    background: lightcoral;\r\n  }\r\n  "]}
