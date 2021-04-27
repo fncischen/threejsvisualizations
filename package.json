@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "npm run build"
+    "build": "react scripts build"
   },
   "author": "",
   "license": "ISC",
